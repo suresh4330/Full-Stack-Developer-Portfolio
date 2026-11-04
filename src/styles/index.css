@@ -1,0 +1,202 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: #04060a;
+    color: #f1f5f9;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background-color: rgba(16, 185, 129, 0.3);
+    color: #34d399;
+  }
+
+  /* Custom subtle sleek scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #04060a;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #1e293b;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #10b981;
+  }
+}
+
+/* Background visual utilities */
+.tech-grid-pattern {
+  background-size: 48px 48px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+}
+
+.tech-radial-glow {
+  background: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.12) 0%, rgba(56, 189, 248, 0.06) 35%, transparent 70%);
+}
+
+.glass-panel {
+  background: rgba(13, 17, 28, 0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.glass-panel:hover {
+  border-color: rgba(16, 185, 129, 0.3);
+  box-shadow: 0 16px 36px -12px rgba(16, 185, 129, 0.08);
+}
+
+/* Text Shimmer Effect */
+@keyframes text-shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-shimmer {
+  background-size: 200% auto;
+  animation: text-shimmer 6s ease-in-out infinite;
+}
+
+/* Moving fluid gradient orbs */
+@keyframes drift-orb-1 {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -40px) scale(1.08);
+  }
+  66% {
+    transform: translate(-25px, 20px) scale(0.95);
+  }
+}
+
+@keyframes drift-orb-2 {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(-35px, 30px) scale(1.05);
+  }
+  66% {
+    transform: translate(25px, -30px) scale(0.92);
+  }
+}
+
+.animate-drift-1 {
+  animation: drift-orb-1 14s ease-in-out infinite;
+}
+
+.animate-drift-2 {
+  animation: drift-orb-2 18s ease-in-out infinite;
+}
+
+/* Perspective styling for 3D Tilt cards */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+/* Dynamic Elevation Shadows and Glow Presets */
+.shadow-elevation-card {
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6), 0 0 1px 1px rgba(255, 255, 255, 0.05);
+  transition: box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s ease;
+}
+
+.shadow-elevation-card:hover {
+  box-shadow: 0 24px 50px -12px rgba(0, 0, 0, 0.8), 0 0 30px -5px rgba(16, 185, 129, 0.15), 0 0 1px 1px rgba(16, 185, 129, 0.3);
+  transform: translateY(-4px);
+}
+
+.shadow-glow-emerald {
+  box-shadow: 0 0 25px -4px rgba(16, 185, 129, 0.25);
+}
+
+.shadow-glow-sky {
+  box-shadow: 0 0 25px -4px rgba(56, 189, 248, 0.25);
+}
+
+.shadow-glow-indigo {
+  box-shadow: 0 0 25px -4px rgba(99, 102, 241, 0.25);
+}
+
+/* Subtle Click Feedback / Ripple pulse */
+@keyframes click-ripple {
+  0% {
+    transform: scale(0.97);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+  }
+  50% {
+    transform: scale(1.01);
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+.animate-click-feedback {
+  animation: click-ripple 0.4s ease-out;
+}
+
+/* Section scroll target pulse */
+@keyframes section-flash {
+  0% {
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.5), 0 0 30px 4px rgba(16, 185, 129, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent, 0 0 0 0 transparent;
+  }
+}
+
+.section-highlight {
+  animation: section-flash 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Subtle gradient border animation */
+@keyframes border-glow-cycle {
+  0%, 100% {
+    border-color: rgba(16, 185, 129, 0.35);
+  }
+  50% {
+    border-color: rgba(56, 189, 248, 0.35);
+  }
+}
+
+.animate-border-cycle {
+  animation: border-glow-cycle 4s ease-in-out infinite;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

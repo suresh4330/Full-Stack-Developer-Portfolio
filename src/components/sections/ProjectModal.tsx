@@ -1,0 +1,226 @@
+import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, Github, ExternalLink, CheckCircle, AlertTriangle, Layers, Code, Server, Database } from 'lucide-react';
+import { Project } from '../../types';
+import { Button } from '../ui/Button';
+
+interface ProjectModalProps {
+  project: Project | null;
+  onClose: () => void;
+}
+
+export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
+  return (
+    <AnimatePresence>
+      {project && (
+        <motion.div
+          className="fixed inset-0 z-50 overflow-y-auto bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.25 }}
+          onClick={onClose}
+        >
+          <motion.div
+            className="bg-dark-900 border border-dark-750 hover:border-brand-500/40 rounded-3xl w-full max-w-4xl max-h-[92vh] overflow-y-auto shadow-2xl shadow-brand-500/10 relative text-left transition-colors duration-300"
+            initial={{ opacity: 0, scale: 0.92, y: 24 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.92, y: 24 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 350 }}
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+          >
+            {/* Header */}
+            <div className="sticky top-0 bg-dark-900/95 backdrop-blur-md px-6 py-4 border-b border-dark-800 flex items-center justify-between z-10">
+              <div className="flex items-center gap-2.5">
+                <span className="px-2.5 py-0.5 rounded-full bg-brand-500/10 text-brand-400 border border-brand-500/20 font-mono text-xs font-semibold">
+                  {project.category}
+                </span>
+                <span className="text-xs font-mono text-slate-400">
+                  {project.date} • {project.role}
+                </span>
+              </div>
+              <button
+                onClick={onClose}
+                aria-label="Close dialog"
+                className="p-1.5 text-slate-400 hover:text-white rounded-lg bg-dark-850 hover:bg-dark-800 border border-dark-750 hover:border-brand-500/50 transition-all group"
+                data-interactive="true"
+              >
+                <X className="w-5 h-5 group-hover:rotate-90 transition-transform duration-200" />
+              </button>
+            </div>
+
+          {/* Body */}
+          <div className="p-6 sm:p-8 space-y-7">
+            {/* Title & Headline */}
+            <div>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-1.5">
+                {project.title}
+              </h2>
+              <p className="text-sm font-medium text-brand-400 mb-4 font-mono">
+                {project.subtitle}
+              </p>
+
+              {/* Problem statement */}
+              <div className="p-4 rounded-xl bg-dark-950 border border-dark-800 text-xs sm:text-sm text-slate-300 leading-relaxed mb-4">
+                <span className="font-bold text-white">Problem Statement: </span>
+                {project.problemStatement}
+              </div>
+
+              {/* Image Preview if available */}
+              {project.imageUrl && (
+                <div className="rounded-2xl overflow-hidden border border-dark-800 bg-dark-950 mb-4">
+                  <img
+                    src={project.imageUrl}
+                    alt={project.title}
+                    className="w-full max-h-72 object-cover object-top"
+                  />
+                </div>
+              )}
+
+              {/* Solution Overview */}
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                {project.solution}
+              </p>
+            </div>
+
+            {/* Equal Importance: Frontend, Backend & Database Stack Breakdown */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+              {/* Frontend Card */}
+              <div className="p-4 rounded-2xl bg-dark-850/80 border border-dark-750">
+                <div className="flex items-center gap-2 mb-2.5 text-xs font-mono font-bold text-sky-400">
+                  <Code className="w-4 h-4" />
+                  <span>Frontend Implementation</span>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {project.frontendStack.map((tech) => (
+                    <span
+                      key={tech}
+                      className="text-[11px] font-mono px-2 py-0.5 rounded bg-dark-900 text-slate-300 border border-dark-700"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Backend Card */}
+              <div className="p-4 rounded-2xl bg-dark-850/80 border border-dark-750">
+                <div className="flex items-center gap-2 mb-2.5 text-xs font-mono font-bold text-brand-400">
+                  <Server className="w-4 h-4" />
+                  <span>Backend Implementation</span>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {project.backendStack.map((tech) => (
+                    <span
+                      key={tech}
+                      className="text-[11px] font-mono px-2 py-0.5 rounded bg-dark-900 text-slate-300 border border-dark-700"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Database Card */}
+              <div className="p-4 rounded-2xl bg-dark-850/80 border border-dark-750">
+                <div className="flex items-center gap-2 mb-2.5 text-xs font-mono font-bold text-indigo-400">
+                  <Database className="w-4 h-4" />
+                  <span>Database & Persistence</span>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {(project.databaseStack || ['In-Memory State Store']).map((tech) => (
+                    <span
+                      key={tech}
+                      className="text-[11px] font-mono px-2 py-0.5 rounded bg-dark-900 text-slate-300 border border-dark-700"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Architecture Summary */}
+            <div className="p-4 rounded-2xl bg-dark-950 border border-dark-800">
+              <h4 className="text-xs font-mono uppercase tracking-wider text-slate-400 mb-1.5 flex items-center gap-1.5">
+                <Layers className="w-4 h-4 text-sky-400" />
+                <span>Architecture Summary</span>
+              </h4>
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                {project.architectureSummary}
+              </p>
+            </div>
+
+            {/* Implemented Capabilities */}
+            <div>
+              <h4 className="text-xs font-mono uppercase tracking-wider text-slate-400 mb-2.5">
+                Verified Implemented Capabilities
+              </h4>
+              <ul className="space-y-2">
+                {project.keyCapabilities.map((cap, i) => (
+                  <li key={i} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-300">
+                    <CheckCircle className="w-4 h-4 text-brand-400 shrink-0 mt-0.5" />
+                    <span>{cap}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Challenges & Solutions */}
+            {project.challenges && project.challenges.length > 0 && (
+              <div>
+                <h4 className="text-xs font-mono uppercase tracking-wider text-slate-400 mb-2.5 flex items-center gap-1.5">
+                  <AlertTriangle className="w-4 h-4 text-amber-400" />
+                  <span>Engineering Challenges & Solutions</span>
+                </h4>
+                <div className="space-y-2.5">
+                  {project.challenges.map((c, idx) => (
+                    <div key={idx} className="p-3.5 rounded-xl bg-dark-850/90 border border-dark-750">
+                      <div className="text-xs font-bold text-amber-300 mb-1">{c.title}</div>
+                      <div className="text-xs text-slate-300 leading-relaxed">{c.description}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
+          <div className="sticky bottom-0 bg-dark-900/95 backdrop-blur-md px-6 py-4 border-t border-dark-800 flex items-center justify-between gap-3">
+            <span className="text-xs font-mono text-slate-400">
+              Verified on GitHub
+            </span>
+            <div className="flex items-center gap-3">
+              <Button
+                variant="secondary"
+                size="sm"
+                href={project.githubUrl}
+                external
+                icon={<Github className="w-4 h-4" />}
+              >
+                View Repository
+              </Button>
+              {project.liveUrl && (
+                <Button
+                  variant="primary"
+                  size="sm"
+                  href={project.liveUrl}
+                  external
+                  icon={<ExternalLink className="w-4 h-4" />}
+                >
+                  Live Demo
+                </Button>
+              )}
+              <Button variant="ghost" size="sm" onClick={onClose}>
+                Close
+              </Button>
+            </div>
+          </div>
+        </motion.div>
+      </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
