@@ -17,9 +17,13 @@ import {
   CornerDownLeft,
   X,
   Phone,
+  Sliders,
+  Wind,
+  Zap,
 } from 'lucide-react';
 import { profileData } from '../../data/profile';
 import { projectsData } from '../../data/projects';
+import { useAnimationConfig } from '../../context/AnimationContext';
 
 interface CommandPaletteProps {
   isOpen: boolean;
@@ -46,6 +50,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [copiedNotification, setCopiedNotification] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { setMode, setIsControlPanelOpen } = useAnimationConfig();
 
   const scrollToSection = (id: string) => {
     onClose();
@@ -213,6 +218,54 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       icon: <Phone className="w-4 h-4 text-sky-400" />,
       action: () => copyToClipboard(profileData.contact.mobile, 'Phone copied to clipboard!'),
       keywords: ['phone', 'mobile', 'call', 'whatsapp'],
+    },
+    {
+      id: 'action-atmosphere-controls',
+      category: 'Actions',
+      title: 'Open Atmosphere & Animation Controls',
+      subtitle: 'Adjust cloud speed, bird flight, moon glow & ocean shimmer',
+      icon: <Sliders className="w-4 h-4 text-brand-400" />,
+      action: () => {
+        onClose();
+        setIsControlPanelOpen(true);
+      },
+      keywords: ['animation', 'controls', 'atmosphere', 'motion', 'sliders', 'settings'],
+    },
+    {
+      id: 'action-anim-cinematic',
+      category: 'Actions',
+      title: 'Animation Mode: Cinematic',
+      subtitle: 'Full motion with flying birds and ocean shimmer',
+      icon: <Sparkles className="w-4 h-4 text-brand-400" />,
+      action: () => {
+        setMode('cinematic');
+        onClose();
+      },
+      keywords: ['cinematic', 'animation', 'full', 'normal', 'birds'],
+    },
+    {
+      id: 'action-anim-reduced',
+      category: 'Actions',
+      title: 'Animation Mode: Reduced Motion',
+      subtitle: 'Accessible, minimal movement mode',
+      icon: <Wind className="w-4 h-4 text-amber-400" />,
+      action: () => {
+        setMode('reduced');
+        onClose();
+      },
+      keywords: ['reduced', 'motion', 'accessible', 'slow'],
+    },
+    {
+      id: 'action-anim-static',
+      category: 'Actions',
+      title: 'Animation Mode: Static Background',
+      subtitle: 'Zero continuous rendering loop (battery-saver)',
+      icon: <Zap className="w-4 h-4 text-slate-400" />,
+      action: () => {
+        setMode('static');
+        onClose();
+      },
+      keywords: ['static', 'pause', 'stop', 'battery'],
     },
 
     // Social Links

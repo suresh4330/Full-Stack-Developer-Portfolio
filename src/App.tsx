@@ -6,6 +6,8 @@ import { ScrollProgressBar } from './components/ui/ScrollProgressBar';
 import { AnimatedBackground } from './components/ui/AnimatedBackground';
 import { HorizontalMarquee } from './components/ui/HorizontalMarquee';
 import { CommandPalette } from './components/ui/CommandPalette';
+import { AnimationProvider } from './context/AnimationContext';
+import { AnimationControlPanel } from './components/ui/AnimationControlPanel';
 import { Navbar } from './components/layout/Navbar';
 import { HeroSection } from './components/sections/HeroSection';
 import { AboutSection } from './components/sections/AboutSection';
@@ -38,51 +40,56 @@ export function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#04060a] text-slate-100 flex flex-col font-sans selection:bg-brand-500/25 selection:text-brand-300 relative overflow-x-hidden">
-      {/* 2025-2026 Interactive Preloader */}
-      <Preloader onComplete={() => {}} />
+    <AnimationProvider>
+      <div className="min-h-screen bg-[#04060a] text-slate-100 flex flex-col font-sans selection:bg-brand-500/25 selection:text-brand-300 relative overflow-x-hidden">
+        {/* 2025-2026 Interactive Preloader */}
+        <Preloader onComplete={() => {}} />
 
-      {/* Modern Fluid Custom Cursor (Desktop Only) */}
-      <CustomCursor />
+        {/* Modern Fluid Custom Cursor (Desktop Only) */}
+        <CustomCursor />
 
-      {/* Global Mouse-Reactive Spotlight */}
-      <CursorSpotlight />
+        {/* Global Mouse-Reactive Spotlight */}
+        <CursorSpotlight />
 
-      {/* Dynamic Scroll Progress Bar */}
-      <ScrollProgressBar />
+        {/* Dynamic Scroll Progress Bar */}
+        <ScrollProgressBar />
 
-      {/* Ambient Animated Gradient Background & Grid */}
-      <AnimatedBackground />
+        {/* Ambient Animated Gradient Background & Grid */}
+        <AnimatedBackground />
 
-      {/* Developer Command Palette (Ctrl+K / Cmd+K) */}
-      <CommandPalette
-        isOpen={isCommandPaletteOpen}
-        onClose={() => setIsCommandPaletteOpen(false)}
-      />
+        {/* Floating Animation & Atmosphere Control System */}
+        <AnimationControlPanel />
 
-      {/* Navigation Header */}
-      <Navbar onOpenCommandPalette={() => setIsCommandPaletteOpen(true)} />
+        {/* Developer Command Palette (Ctrl+K / Cmd+K) */}
+        <CommandPalette
+          isOpen={isCommandPaletteOpen}
+          onClose={() => setIsCommandPaletteOpen(false)}
+        />
 
-      {/* Main Content Sections with Scroll Transitions */}
-      <main className="flex-1 relative z-10">
-        <HeroSection />
-        <HorizontalMarquee />
-        <AboutSection />
-        <FrontendSection />
-        <BackendSection />
-        <ArchitectureSection />
-        <ProjectsSection />
-        <WorkflowSection />
-        <SkillsSection />
-        <ExperienceSection />
-        <EducationSection />
-        <CertificationsSection />
-        <ContactSection />
-      </main>
+        {/* Navigation Header */}
+        <Navbar onOpenCommandPalette={() => setIsCommandPaletteOpen(true)} />
 
-      {/* Footer */}
-      <Footer />
-    </div>
+        {/* Main Content Sections with Scroll Transitions */}
+        <main className="flex-1 relative z-10">
+          <HeroSection />
+          <HorizontalMarquee />
+          <AboutSection />
+          <FrontendSection />
+          <BackendSection />
+          <ArchitectureSection />
+          <ProjectsSection />
+          <WorkflowSection />
+          <SkillsSection />
+          <ExperienceSection />
+          <EducationSection />
+          <CertificationsSection />
+          <ContactSection />
+        </main>
+
+        {/* Footer */}
+        <Footer />
+      </div>
+    </AnimationProvider>
   );
 }
 

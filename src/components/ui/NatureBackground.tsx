@@ -1,22 +1,28 @@
 import React, { useEffect, useRef } from 'react';
 import { useScroll } from 'framer-motion';
+import { useAnimationConfig } from '../../context/AnimationContext';
 
 /**
- * Photorealistic Moonlit Ocean Background with Living, Continuously Flying Birds,
- * Shimmering Ocean Wave Reflections, Crisp Glowing Moon, and Parallax Clouds.
+ * Photorealistic Moonlit Ocean Background with Advanced Animation Controls
  *
- * All original visual elements, atmosphere, and layout are preserved.
- * Fixes:
- * - Birds continuously fly across the background with independent paths, speeds, and altitudes.
- * - Realistic wing-flapping and aerodynamic gliding physics.
- * - Birds enter naturally from offscreen and respawn seamlessly.
- * - Distant birds are smaller, slower, and have perspective depth.
- * - Independent continuous motion that never freezes during scrolling or section changes.
- * - Softly blends over static wallpaper marks so only living dynamic birds are visible.
+ * Fully integrated with centralized AnimationContext:
+ * - Configurable motion speeds: birds, ocean wave shimmer, cloud parallax, star twinkle.
+ * - Configurable mouse interaction: sensitivity, toggle, moon bloom reactivity.
+ * - Configurable visuals: brightness, moon glow, ocean reflection intensity, star density.
+ * - Performance controls: Cinematic, Subtle, Reduced Motion, and Static modes.
+ * - Automatic pause when browser tab is inactive (zero CPU/battery waste).
+ * - Preserves all original moonlit ocean artwork, clouds, moon, and layout.
  */
 export const NatureBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { scrollYProgress } = useScroll();
+  const { config } = useAnimationConfig();
+
+  // Keep a mutable ref so RAF render loop always reads real-time slider values with zero re-mount lag
+  const configRef = useRef(config);
+  useEffect(() => {
+    configRef.current = config;
+  }, [config]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -35,6 +41,9 @@ export const NatureBackground: React.FC = () => {
     let imageLoaded = false;
     bgImage.onload = () => {
       imageLoaded = true;
+      if (configRef.current.performance.mode === 'static') {
+        render(); // Render initial static frame
+      }
     };
 
     const handleResize = () => {
@@ -43,10 +52,11 @@ export const NatureBackground: React.FC = () => {
       height = canvas.height = window.innerHeight;
       initStars();
       initWaterShimmer();
+      if (configRef.current.performance.mode === 'static') {
+        render();
+      }
     };
     window.addEventListener('resize', handleResize);
-
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     // -------------------------------------------------------------
     // 1. MOUSE TRACKING & PARALLAX SMOOTHING
@@ -112,7 +122,7 @@ export const NatureBackground: React.FC = () => {
 
     let stars: Star[] = [];
     const initStars = () => {
-      const count = Math.floor(Math.min(width, 1920) * 0.075);
+      const count = Math.floor(Math.min(width, 1920) * 0.08);
       stars = [];
       for (let i = 0; i < count; i++) {
         const xRatio = Math.random() < 0.75 ? Math.random() * 0.55 : Math.random();
@@ -173,7 +183,6 @@ export const NatureBackground: React.FC = () => {
 
     // -------------------------------------------------------------
     // 5. LIVING, AUTONOMOUS CONTINUOUSLY FLYING BIRDS
-    // Multiple independent birds at varying depths, speeds & paths
     // -------------------------------------------------------------
     interface AutonomousBird {
       id: number;
@@ -195,19 +204,17 @@ export const NatureBackground: React.FC = () => {
       bodyAngle: number;
     }
 
-    const birdCount = 10;
+    const maxBirds = 18;
     const birds: AutonomousBird[] = [];
 
-    // Helper to spawn or reset an autonomous bird
     const createBird = (id: number, initialScatter = false): AutonomousBird => {
-      const depth = Math.random(); // 0 = far distance, 1 = closer
-      // Depth perspective: distant birds are smaller & slower
+      const depth = Math.random();
       const scale = 0.16 + depth * 0.22;
       const speedX = 1.4 + depth * 1.6 + (Math.random() - 0.5) * 0.35;
       const opacity = 0.55 + depth * 0.4;
 
       const x = initialScatter
-        ? (id / birdCount) * (width + 240) - 120 + (Math.random() - 0.5) * 100
+        ? (id / maxBirds) * (width + 240) - 120 + (Math.random() - 0.5) * 100
         : -40 - Math.random() * 180;
 
       const y = height * 0.08 + Math.random() * (height * 0.44);
@@ -233,8 +240,7 @@ export const NatureBackground: React.FC = () => {
       };
     };
 
-    // Initialize all birds scattered across mid-flight
-    for (let i = 0; i < birdCount; i++) {
+    for (let i = 0; i < maxBirds; i++) {
       birds.push(createBird(i, true));
     }
 
@@ -251,7 +257,17 @@ export const NatureBackground: React.FC = () => {
     let time = 0;
 
     const render = () => {
-      time += 0.016;
+      const cfg = configRef.current;
+
+      // 1. Performance check: pause if tab is hidden
+      if (cfg.performance.pauseWhenHidden && !cfg.performance.isTabVisible) {
+        animationFrameId = requestAnimationFrame(render);
+        return;
+      }
+
+      const isStatic = cfg.performance.mode === 'static';
+      const timeDelta = isStatic ? 0 : 0.016;
+      time += timeDelta;
 
       // Mouse decay & smoothing
       mouseVx *= 0.9;
@@ -261,16 +277,23 @@ export const NatureBackground: React.FC = () => {
       smoothMouseNormX += (targetNormX - smoothMouseNormX) * 0.05;
       smoothMouseNormY += (targetNormY - smoothMouseNormY) * 0.05;
 
+      const mouseMult = cfg.mouse.enabled
+        ? cfg.mouse.intensity * cfg.motion.parallaxIntensity
+        : 0;
+
       // Smooth scroll interpolation
       currentScroll += (targetScroll - currentScroll) * 0.06;
-      const scrollPixelOffset = currentScroll * height * 0.55;
+      const scrollMult = cfg.scroll.enabled ? cfg.scroll.intensity : 0;
+      const scrollPixelOffset = currentScroll * height * 0.55 * scrollMult;
 
       // Current Theme
       let themeIdx = 0;
-      for (let i = 0; i < themes.length - 1; i++) {
-        if (currentScroll >= themes[i].threshold && currentScroll <= themes[i + 1].threshold) {
-          themeIdx = i;
-          break;
+      if (cfg.scroll.sectionTransitions) {
+        for (let i = 0; i < themes.length - 1; i++) {
+          if (currentScroll >= themes[i].threshold && currentScroll <= themes[i + 1].threshold) {
+            themeIdx = i;
+            break;
+          }
         }
       }
       const curTheme = themes[themeIdx].theme;
@@ -292,8 +315,8 @@ export const NatureBackground: React.FC = () => {
           baseW = baseH * imgRatio;
         }
 
-        const drawX = (width - baseW) / 2 + smoothMouseNormX * 14;
-        const drawY = (height - baseH) / 2 + smoothMouseNormY * 9 - scrollPixelOffset * 0.04;
+        const drawX = (width - baseW) / 2 + smoothMouseNormX * 14 * mouseMult;
+        const drawY = (height - baseH) / 2 + smoothMouseNormY * 9 * mouseMult - scrollPixelOffset * 0.04;
 
         ctx.drawImage(bgImage, drawX, drawY, baseW, baseH);
 
@@ -323,9 +346,13 @@ export const NatureBackground: React.FC = () => {
         // B. MOON ATMOSPHERIC CORONA & HALO
         // ---------------------------------------------------------
         ctx.save();
-        const distToMoon = Math.hypot(mouseX - moonX, mouseY - moonY);
-        const moonBloom = Math.max(0, 1 - distToMoon / 600) * 0.08;
-        const coronaRadius = moonRadius * (2.2 + Math.sin(time * 0.6) * 0.12);
+        let moonBloom = 0;
+        if (cfg.mouse.enabled && cfg.mouse.reactToMoon) {
+          const distToMoon = Math.hypot(mouseX - moonX, mouseY - moonY);
+          moonBloom = Math.max(0, 1 - distToMoon / 600) * 0.08 * cfg.mouse.intensity;
+        }
+        const moonGlowMult = cfg.visuals.moonGlow;
+        const coronaRadius = moonRadius * (2.2 * moonGlowMult + Math.sin(time * 0.6) * 0.12);
 
         const coronaGrad = ctx.createRadialGradient(
           moonX,
@@ -335,8 +362,9 @@ export const NatureBackground: React.FC = () => {
           moonY,
           coronaRadius
         );
-        coronaGrad.addColorStop(0, `rgba(224, 242, 254, ${curTheme.moonCoronaAlpha + moonBloom})`);
-        coronaGrad.addColorStop(0.45, `rgba(186, 230, 253, ${(curTheme.moonCoronaAlpha + moonBloom) * 0.45})`);
+        const coronaAlpha = (curTheme.moonCoronaAlpha + moonBloom) * moonGlowMult;
+        coronaGrad.addColorStop(0, `rgba(224, 242, 254, ${coronaAlpha})`);
+        coronaGrad.addColorStop(0.45, `rgba(186, 230, 253, ${coronaAlpha * 0.45})`);
         coronaGrad.addColorStop(1, 'transparent');
 
         ctx.fillStyle = coronaGrad;
@@ -349,12 +377,15 @@ export const NatureBackground: React.FC = () => {
         // C. TWINKLING STARS IN DARK SKY PATCHES
         // ---------------------------------------------------------
         ctx.save();
-        for (let i = 0; i < stars.length; i++) {
-          const star = stars[i];
-          const sx = star.xRatio * width + smoothMouseNormX * 5;
-          const sy = star.yRatio * oceanHorizonY + smoothMouseNormY * 3;
+        const activeStarsCount = Math.floor(stars.length * cfg.visuals.starDensity);
+        const starTwinkleSpeed = cfg.motion.starTwinkleSpeed;
 
-          const twinkle = Math.sin(time * star.twinkleSpeed * 60 + star.twinklePhase);
+        for (let i = 0; i < activeStarsCount; i++) {
+          const star = stars[i];
+          const sx = star.xRatio * width + smoothMouseNormX * 5 * mouseMult;
+          const sy = star.yRatio * oceanHorizonY + smoothMouseNormY * 3 * mouseMult;
+
+          const twinkle = Math.sin(time * star.twinkleSpeed * 60 * starTwinkleSpeed + star.twinklePhase);
           const alpha = Math.max(0.12, Math.min(0.95, star.baseAlpha + twinkle * 0.35));
 
           ctx.fillStyle = `rgba(224, 242, 254, ${alpha})`;
@@ -379,8 +410,12 @@ export const NatureBackground: React.FC = () => {
         // ---------------------------------------------------------
         // D. CONTINUOUSLY FLYING BIRDS (Autonomous & Dynamic)
         // ---------------------------------------------------------
-        birds.forEach((bird) => {
-          if (!prefersReducedMotion) {
+        const activeBirdCount = Math.min(birds.length, cfg.motion.birdCount);
+        const activeBirds = birds.slice(0, activeBirdCount);
+        const birdSpeedMult = cfg.motion.birdSpeed;
+
+        activeBirds.forEach((bird) => {
+          if (!isStatic) {
             // Glide & flap state cycle
             bird.glideTimer++;
             if (bird.isGliding) {
@@ -389,7 +424,7 @@ export const NatureBackground: React.FC = () => {
                 bird.glideTimer = 0;
               }
             } else {
-              bird.flapPhase += bird.flapRate;
+              bird.flapPhase += bird.flapRate * birdSpeedMult;
               if (bird.glideTimer > bird.flapDuration) {
                 bird.isGliding = true;
                 bird.glideTimer = 0;
@@ -401,8 +436,8 @@ export const NatureBackground: React.FC = () => {
             const wanderVy = Math.cos(bird.altitudeWanderPhase) * (bird.altitudeWanderAmp * 0.035);
 
             // Move continuously across the sky!
-            bird.x += bird.vx;
-            bird.y += bird.vy + wanderVy;
+            bird.x += bird.vx * birdSpeedMult;
+            bird.y += (bird.vy + wanderVy) * birdSpeedMult;
 
             // Smooth aerodynamic banking angle
             const targetAngle = Math.atan2(bird.vy + wanderVy, bird.vx);
@@ -416,8 +451,8 @@ export const NatureBackground: React.FC = () => {
           }
 
           // Render bird with depth perspective
-          const bx = bird.x + smoothMouseNormX * (bird.scale * 15);
-          const by = bird.y - scrollPixelOffset * (bird.scale * 0.05) + smoothMouseNormY * (bird.scale * 8);
+          const bx = bird.x + smoothMouseNormX * (bird.scale * 15) * mouseMult;
+          const by = bird.y - scrollPixelOffset * (bird.scale * 0.05) + smoothMouseNormY * (bird.scale * 8) * mouseMult;
 
           ctx.save();
           ctx.translate(bx, by);
@@ -428,7 +463,6 @@ export const NatureBackground: React.FC = () => {
             ? 0.06 + Math.sin(time * 2 + bird.id) * 0.02
             : Math.sin(bird.flapPhase) * 0.74;
 
-          // Crisp silver-white gull silhouette
           ctx.fillStyle = `rgba(240, 248, 255, ${bird.opacity})`;
           ctx.strokeStyle = `rgba(255, 255, 255, ${bird.opacity * 0.95})`;
           ctx.lineWidth = 1.25;
@@ -461,6 +495,9 @@ export const NatureBackground: React.FC = () => {
         // E. LIVING WATER SHIMMER & MOONLIGHT REFLECTIONS
         // ---------------------------------------------------------
         ctx.save();
+        const reflectionMult = cfg.visuals.reflectionBrightness;
+        const waveSpeedMult = cfg.motion.waveSpeed;
+
         // Horizon subtle sheen line directly under the moon
         const sheenW = 280;
         const horizonSheenGrad = ctx.createLinearGradient(
@@ -470,9 +507,9 @@ export const NatureBackground: React.FC = () => {
           oceanHorizonY
         );
         horizonSheenGrad.addColorStop(0, 'rgba(255, 255, 255, 0.0)');
-        horizonSheenGrad.addColorStop(0.35, 'rgba(224, 242, 254, 0.45)');
-        horizonSheenGrad.addColorStop(0.5, 'rgba(255, 255, 255, 0.85)');
-        horizonSheenGrad.addColorStop(0.65, 'rgba(224, 242, 254, 0.45)');
+        horizonSheenGrad.addColorStop(0.35, `rgba(224, 242, 254, ${0.45 * reflectionMult})`);
+        horizonSheenGrad.addColorStop(0.5, `rgba(255, 255, 255, ${0.85 * reflectionMult})`);
+        horizonSheenGrad.addColorStop(0.65, `rgba(224, 242, 254, ${0.45 * reflectionMult})`);
         horizonSheenGrad.addColorStop(1, 'rgba(255, 255, 255, 0.0)');
 
         ctx.strokeStyle = horizonSheenGrad;
@@ -488,13 +525,14 @@ export const NatureBackground: React.FC = () => {
           const gy = oceanHorizonY + Math.pow(d, 1.55) * oceanH;
 
           const corridorSpread = 90 + d * 280;
-          const gx = moonX + glint.corridorOffset * corridorSpread + smoothMouseNormX * 7;
+          const gx = moonX + glint.corridorOffset * corridorSpread + smoothMouseNormX * 7 * mouseMult;
 
-          const sparkle = Math.sin(time * 60 * glint.speed + glint.phase);
+          const sparkle = Math.sin(time * 60 * glint.speed * waveSpeedMult + glint.phase);
           const glintAlpha =
             Math.max(0.04, Math.min(1.0, 0.45 + sparkle * 0.55)) *
             glint.alpha *
-            curTheme.shimmerBoost;
+            curTheme.shimmerBoost *
+            reflectionMult;
 
           if (glintAlpha <= 0.06) return;
 
@@ -537,6 +575,7 @@ export const NatureBackground: React.FC = () => {
       // -----------------------------------------------------------
       // F. CALIBRATED VIGNETTE (Readability & Professional Depth)
       // -----------------------------------------------------------
+      const vigStrength = cfg.visuals.vignetteStrength;
       const vignette = ctx.createRadialGradient(
         width / 2,
         height / 2,
@@ -545,13 +584,16 @@ export const NatureBackground: React.FC = () => {
         height / 2,
         Math.max(width, height) * 0.85
       );
-      vignette.addColorStop(0, 'rgba(2, 6, 18, 0.16)');
-      vignette.addColorStop(1, 'rgba(2, 5, 16, 0.72)');
+      vignette.addColorStop(0, `rgba(2, 6, 18, ${0.16 * vigStrength})`);
+      vignette.addColorStop(1, `rgba(2, 5, 16, ${0.72 * vigStrength})`);
 
       ctx.fillStyle = vignette;
       ctx.fillRect(0, 0, width, height);
 
-      animationFrameId = requestAnimationFrame(render);
+      // Loop RAF if not in static mode
+      if (!isStatic) {
+        animationFrameId = requestAnimationFrame(render);
+      }
     };
 
     render();
