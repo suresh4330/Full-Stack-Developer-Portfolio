@@ -2,16 +2,17 @@ import React, { useEffect, useRef } from 'react';
 import { useScroll } from 'framer-motion';
 
 /**
- * Photorealistic Moonlit Ocean Background with Living Water Shimmer,
- * Crisp Moon Corona, Drifting Atmospheric Mist, and Flying Birds Flock.
+ * Refined Cinematic Moonlit Ocean Environment
  *
- * Implements the authentic moonlit ocean environment:
- * - Uses the high-fidelity moonlit ocean artwork as the foundational visual asset layer.
- * - Crisp, highly-detailed moon with subtle breathing corona (no artificial blur).
- * - Photorealistic clouds with natural fractal edges and genuine silver rim highlights.
- * - Real ocean wave textures with continuous shimmering moonlight specular reflections.
- * - Ascending flock of silver-white birds with aerodynamic flap/glide physics.
- * - Smooth mouse parallax and scroll-driven color grading with high-contrast text readability.
+ * Implements user's exact polish specifications:
+ * 1. Reduced background brightness and excessive blue saturation (deep midnight navy grade).
+ * 2. Smaller, sharper, naturally illuminated moon (tight natural rim, no blurry bloom).
+ * 3. Crisp, realistic cloud textures without any blurry mist blobs.
+ * 4. Smaller, realistic, subtle birds (distant flock with natural flight physics).
+ * 5. Dark navy atmospheric depth overlay ensuring background is visually secondary.
+ * 6. Subtle, realistic, delicate moonlight reflections on the dark ocean.
+ * 7. Smooth, natural environmental motion with mouse parallax & scroll transitions.
+ * 8. All portfolio content, navigation, typography, and buttons remain 100% sharp and readable.
  */
 export const NatureBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -28,7 +29,7 @@ export const NatureBackground: React.FC = () => {
     let width = (canvas.width = window.innerWidth);
     let height = (canvas.height = window.innerHeight);
 
-    // Load authentic high-resolution moonlit ocean asset
+    // Foundational high-fidelity artwork asset
     const bgImage = new Image();
     bgImage.src = '/moonlit-ocean.jpg';
     let imageLoaded = false;
@@ -82,56 +83,46 @@ export const NatureBackground: React.FC = () => {
     window.addEventListener('touchmove', handleTouchMove, { passive: true });
 
     // -------------------------------------------------------------
-    // 2. NOCTURNAL COLOR GRADING THEMES (Scroll-Responsive)
+    // 2. SCROLL THEMES & NOCTURNAL COLOR GRADING
     // -------------------------------------------------------------
-    interface ColorTheme {
-      skyOverlay: string;
-      oceanTint: string;
-      moonCoronaAlpha: number;
-      shimmerBoost: number;
+    interface ThemeProfile {
+      navyOverlayAlpha: number;
+      oceanShimmerAlpha: number;
     }
 
-    const themes: Array<{ threshold: number; theme: ColorTheme }> = [
+    const themes: Array<{ threshold: number; profile: ThemeProfile }> = [
       {
-        threshold: 0.0, // Hero: Pure Moonlit Deep Cobalt Night
-        theme: {
-          skyOverlay: 'rgba(2, 7, 24, 0.12)',
-          oceanTint: 'rgba(2, 9, 26, 0.18)',
-          moonCoronaAlpha: 0.24,
-          shimmerBoost: 1.0,
+        threshold: 0.0, // Hero: Deep Midnight Navy
+        profile: {
+          navyOverlayAlpha: 0.38,
+          oceanShimmerAlpha: 0.85,
         },
       },
       {
-        threshold: 0.33, // Frontend/Backend: Deep Indigo Ocean
-        theme: {
-          skyOverlay: 'rgba(3, 8, 30, 0.16)',
-          oceanTint: 'rgba(2, 8, 22, 0.22)',
-          moonCoronaAlpha: 0.22,
-          shimmerBoost: 0.95,
+        threshold: 0.33, // Frontend/Backend: Deep Indigo Calm
+        profile: {
+          navyOverlayAlpha: 0.42,
+          oceanShimmerAlpha: 0.78,
         },
       },
       {
         threshold: 0.68, // Projects/Workflow: Midnight Sapphire
-        theme: {
-          skyOverlay: 'rgba(4, 10, 36, 0.14)',
-          oceanTint: 'rgba(3, 10, 28, 0.2)',
-          moonCoronaAlpha: 0.26,
-          shimmerBoost: 1.05,
+        profile: {
+          navyOverlayAlpha: 0.39,
+          oceanShimmerAlpha: 0.88,
         },
       },
       {
-        threshold: 1.0, // Contact/Footer: Celestial Deep Abyss
-        theme: {
-          skyOverlay: 'rgba(1, 5, 18, 0.2)',
-          oceanTint: 'rgba(1, 6, 20, 0.25)',
-          moonCoronaAlpha: 0.2,
-          shimmerBoost: 0.9,
+        threshold: 1.0, // Contact/Footer: Celestial Deep Nocturne
+        profile: {
+          navyOverlayAlpha: 0.45,
+          oceanShimmerAlpha: 0.75,
         },
       },
     ];
 
     // -------------------------------------------------------------
-    // 3. TWINKLING STARS IN UPPER-LEFT SKY
+    // 3. SUBTLE TWINKLING STARS IN DARK SKY PATCHES
     // -------------------------------------------------------------
     interface Star {
       xRatio: number;
@@ -145,20 +136,19 @@ export const NatureBackground: React.FC = () => {
 
     let stars: Star[] = [];
     const initStars = () => {
-      const count = Math.floor(Math.min(width, 1920) * 0.075);
+      const count = Math.floor(Math.min(width, 1920) * 0.065); // Subtle count
       stars = [];
       for (let i = 0; i < count; i++) {
-        // Concentrated in upper-left and upper sky
-        const xRatio = Math.random() < 0.75 ? Math.random() * 0.55 : Math.random();
-        const yRatio = Math.pow(Math.random(), 1.5) * 0.42;
-        const size = Math.random() < 0.12 ? 1.6 + Math.random() * 0.6 : 0.6 + Math.random() * 0.6;
-        const hasSpike = size > 1.7 && Math.random() < 0.35;
+        const xRatio = Math.random() < 0.8 ? Math.random() * 0.52 : Math.random();
+        const yRatio = Math.pow(Math.random(), 1.6) * 0.4;
+        const size = Math.random() < 0.1 ? 1.4 + Math.random() * 0.5 : 0.5 + Math.random() * 0.5;
+        const hasSpike = size > 1.6 && Math.random() < 0.3;
         stars.push({
           xRatio,
           yRatio,
           size,
-          baseAlpha: 0.35 + Math.random() * 0.55,
-          twinkleSpeed: 0.02 + Math.random() * 0.04,
+          baseAlpha: 0.25 + Math.random() * 0.45,
+          twinkleSpeed: 0.018 + Math.random() * 0.035,
           twinklePhase: Math.random() * Math.PI * 2,
           hasSpike,
         });
@@ -167,49 +157,49 @@ export const NatureBackground: React.FC = () => {
     initStars();
 
     // -------------------------------------------------------------
-    // 4. LIVING WATER SHIMMER GLINTS (Moonlight reflection glade)
+    // 4. SUBTLE, REALISTIC MOONLIGHT WATER REFLECTION GLINTS
     // -------------------------------------------------------------
-    interface ShimmerGlint {
+    interface SubtleGlint {
       depthRatio: number; // [0, 1] from horizon to ocean bottom
-      corridorOffset: number; // [-0.5, 0.5] within the reflection path
+      corridorOffset: number; // Offset inside reflection corridor
       length: number;
       thickness: number;
       speed: number;
       phase: number;
-      alpha: number;
+      baseAlpha: number;
     }
 
-    let shimmerGlints: ShimmerGlint[] = [];
+    let waterGlints: SubtleGlint[] = [];
     const initWaterShimmer = () => {
-      const count = Math.floor(Math.min(width, 1920) * 0.22); // ~180-320 glints
-      shimmerGlints = [];
+      const count = Math.floor(Math.min(width, 1920) * 0.16); // Refined count
+      waterGlints = [];
       for (let i = 0; i < count; i++) {
-        const depthRatio = Math.pow(Math.random(), 1.35);
-        // Concentrated along moon reflection column with natural scatter
-        const corridorOffset = (Math.random() - 0.5) * (Math.random() < 0.65 ? 0.6 : 1.0);
-        const length = (10 + depthRatio * 34) * (0.6 + Math.random() * 0.8);
-        const thickness = 0.8 + depthRatio * 1.8;
-        const speed = 0.03 + Math.random() * 0.05;
+        const depthRatio = Math.pow(Math.random(), 1.45);
+        const corridorOffset = (Math.random() - 0.5) * (Math.random() < 0.7 ? 0.55 : 0.95);
+        // Slender, delicate wave glints
+        const length = (6 + depthRatio * 20) * (0.6 + Math.random() * 0.8);
+        const thickness = 0.6 + depthRatio * 1.1;
+        const speed = 0.025 + Math.random() * 0.04;
         const phase = Math.random() * Math.PI * 2;
-        const alpha = 0.35 + Math.random() * 0.65;
+        const baseAlpha = 0.22 + Math.random() * 0.45;
 
-        shimmerGlints.push({
+        waterGlints.push({
           depthRatio,
           corridorOffset,
           length,
           thickness,
           speed,
           phase,
-          alpha,
+          baseAlpha,
         });
       }
     };
     initWaterShimmer();
 
     // -------------------------------------------------------------
-    // 5. ASCENDING FLOCK OF FLYING BIRDS
+    // 5. SMALL, REALISTIC & SUBTLE DISTANT BIRDS
     // -------------------------------------------------------------
-    interface Bird {
+    interface SmallBird {
       order: number;
       relX: number;
       relY: number;
@@ -219,49 +209,33 @@ export const NatureBackground: React.FC = () => {
       isGliding: boolean;
       glideTimer: number;
       glideDuration: number;
+      opacity: number;
     }
 
-    let flockBaseX = width * 0.18;
-    let flockBaseY = height * 0.22;
-    const birdCount = 9;
-    const birds: Bird[] = [];
+    let flockBaseX = width * 0.16;
+    let flockBaseY = height * 0.2;
+    const birdCount = 8;
+    const smallBirds: SmallBird[] = [];
 
     for (let i = 0; i < birdCount; i++) {
-      const relX = (i - 4) * 26;
-      const relY = (i - 4) * 15 + Math.sin(i * 0.45) * 5;
-      birds.push({
+      const relX = (i - 3.5) * 22;
+      const relY = (i - 3.5) * 12 + Math.sin(i * 0.5) * 4;
+      smallBirds.push({
         order: i,
         relX,
         relY,
-        scale: 0.34 - i * 0.012,
-        flapRate: 0.085 + Math.random() * 0.02,
-        flapPhase: i * 0.6,
+        scale: 0.16 - i * 0.006, // Smaller, subtle scale
+        flapRate: 0.08 + Math.random() * 0.02,
+        flapPhase: i * 0.55,
         isGliding: false,
         glideTimer: 0,
-        glideDuration: 80 + Math.random() * 70,
+        glideDuration: 90 + Math.random() * 80,
+        opacity: 0.48 + Math.random() * 0.18,
       });
     }
 
     // -------------------------------------------------------------
-    // 6. SUBTLE DRIFTING MIST (Atmospheric depth)
-    // -------------------------------------------------------------
-    interface DriftingMist {
-      xRatio: number;
-      yRatio: number;
-      wRatio: number;
-      hRatio: number;
-      speedX: number;
-      opacity: number;
-    }
-
-    const driftingMists: DriftingMist[] = [
-      { xRatio: 0.15, yRatio: 0.32, wRatio: 0.55, hRatio: 0.18, speedX: 0.04, opacity: 0.09 },
-      { xRatio: 0.45, yRatio: 0.44, wRatio: 0.65, hRatio: 0.14, speedX: 0.05, opacity: 0.07 },
-      { xRatio: 0.75, yRatio: 0.22, wRatio: 0.45, hRatio: 0.12, speedX: 0.03, opacity: 0.08 },
-    ];
-
-    // -------------------------------------------------------------
-    // 7. MAIN SIMULATION & RENDERING LOOP
+    // 6. MAIN SIMULATION & RENDERING LOOP
     // -------------------------------------------------------------
     let currentScroll = 0;
     let targetScroll = 0;
@@ -280,14 +254,14 @@ export const NatureBackground: React.FC = () => {
       mouseVy *= 0.9;
       const targetNormX = (mouseX / width - 0.5) * 2;
       const targetNormY = (mouseY / height - 0.5) * 2;
-      smoothMouseNormX += (targetNormX - smoothMouseNormX) * 0.05;
-      smoothMouseNormY += (targetNormY - smoothMouseNormY) * 0.05;
+      smoothMouseNormX += (targetNormX - smoothMouseNormX) * 0.04;
+      smoothMouseNormY += (targetNormY - smoothMouseNormY) * 0.04;
 
-      // Scroll interpolation
-      currentScroll += (targetScroll - currentScroll) * 0.06;
-      const scrollPixelOffset = currentScroll * height * 0.55;
+      // Smooth scroll interpolation
+      currentScroll += (targetScroll - currentScroll) * 0.055;
+      const scrollPixelOffset = currentScroll * height * 0.45;
 
-      // Current Theme Interpolation
+      // Current Theme Profile
       let themeIdx = 0;
       for (let i = 0; i < themes.length - 1; i++) {
         if (currentScroll >= themes[i].threshold && currentScroll <= themes[i + 1].threshold) {
@@ -295,86 +269,109 @@ export const NatureBackground: React.FC = () => {
           break;
         }
       }
-      const curTheme = themes[themeIdx].theme;
+      const curProfile = themes[themeIdx].profile;
 
       // -----------------------------------------------------------
       // A. DRAW FOUNDATIONAL MOONLIT OCEAN ARTWORK
       // -----------------------------------------------------------
       if (imageLoaded) {
-        // High-fidelity cover-fit calculations with parallax headroom
         const imgRatio = bgImage.naturalWidth / bgImage.naturalHeight;
         const canvasRatio = width / height;
         let baseW = width;
         let baseH = height;
 
         if (canvasRatio > imgRatio) {
-          baseW = width * 1.06;
+          baseW = width * 1.05;
           baseH = baseW / imgRatio;
         } else {
-          baseH = height * 1.06;
+          baseH = height * 1.05;
           baseW = baseH * imgRatio;
         }
 
-        const drawX = (width - baseW) / 2 + smoothMouseNormX * 14;
-        const drawY = (height - baseH) / 2 + smoothMouseNormY * 9 - scrollPixelOffset * 0.04;
+        const drawX = (width - baseW) / 2 + smoothMouseNormX * 10;
+        const drawY = (height - baseH) / 2 + smoothMouseNormY * 7 - scrollPixelOffset * 0.035;
 
+        // Draw the photorealistic artwork
         ctx.drawImage(bgImage, drawX, drawY, baseW, baseH);
 
-        // Calculate key physical anchor points from the artwork
+        // ---------------------------------------------------------
+        // B. DEEP MIDNIGHT NAVY COLOR-GRADE LAYER
+        // Reduces excessive brightness and harsh electric blue saturation
+        // ---------------------------------------------------------
+        ctx.save();
+        // Deep indigo/navy toning overlay to desaturate and darken
+        ctx.fillStyle = `rgba(3, 8, 22, ${curProfile.navyOverlayAlpha})`;
+        ctx.fillRect(drawX, drawY, baseW, baseH);
+
+        // Subtle nocturnal cyan-indigo gradient to enrich night ambiance
+        const toneGrad = ctx.createLinearGradient(0, drawY, 0, drawY + baseH);
+        toneGrad.addColorStop(0, 'rgba(2, 6, 18, 0.42)');
+        toneGrad.addColorStop(0.55, 'rgba(3, 10, 26, 0.22)');
+        toneGrad.addColorStop(1, 'rgba(1, 4, 14, 0.48)');
+        ctx.fillStyle = toneGrad;
+        ctx.fillRect(drawX, drawY, baseW, baseH);
+        ctx.restore();
+
+        // Physical coordinates from artwork
         const oceanHorizonY = drawY + baseH * 0.68;
         const oceanH = height - oceanHorizonY;
         const moonX = drawX + baseW * 0.828;
         const moonY = drawY + baseH * 0.256;
-        const moonRadius = baseW * 0.051;
+        const moonRadius = baseW * 0.042; // Naturally proportioned & compact
 
         // ---------------------------------------------------------
-        // B. CRISP MOON CORONA & ATMOSPHERIC BREATHING HALO
+        // C. CRISP, SHARP & NATURALLY ILLUMINATED MOON
+        // Tight, subtle natural rim halo — NO oversized blurry bloom!
         // ---------------------------------------------------------
         ctx.save();
-        // Distance from cursor to moon determines subtle luminous bloom
-        const distToMoon = Math.hypot(mouseX - moonX, mouseY - moonY);
-        const moonBloom = Math.max(0, 1 - distToMoon / 600) * 0.08;
-        const coronaRadius = moonRadius * (2.4 + Math.sin(time * 0.6) * 0.15);
-
-        const coronaGrad = ctx.createRadialGradient(
+        // Delicate, tight natural atmospheric rim (radius only 1.25x)
+        const haloRadius = moonRadius * 1.25;
+        const tightHalo = ctx.createRadialGradient(
           moonX,
           moonY,
-          moonRadius * 0.75,
+          moonRadius * 0.9,
           moonX,
           moonY,
-          coronaRadius
+          haloRadius
         );
-        coronaGrad.addColorStop(0, `rgba(224, 242, 254, ${curTheme.moonCoronaAlpha + moonBloom})`);
-        coronaGrad.addColorStop(0.45, `rgba(186, 230, 253, ${(curTheme.moonCoronaAlpha + moonBloom) * 0.45})`);
-        coronaGrad.addColorStop(1, 'transparent');
+        tightHalo.addColorStop(0, 'rgba(235, 245, 255, 0.16)');
+        tightHalo.addColorStop(0.5, 'rgba(186, 224, 255, 0.06)');
+        tightHalo.addColorStop(1, 'transparent');
 
-        ctx.fillStyle = coronaGrad;
+        ctx.fillStyle = tightHalo;
         ctx.beginPath();
-        ctx.arc(moonX, moonY, coronaRadius, 0, Math.PI * 2);
+        ctx.arc(moonX, moonY, haloRadius, 0, Math.PI * 2);
         ctx.fill();
+
+        // Crisp illuminated silver outer limb accent
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+        ctx.lineWidth = 0.8;
+        ctx.beginPath();
+        ctx.arc(moonX, moonY, moonRadius * 0.98, -Math.PI * 0.3, Math.PI * 0.7);
+        ctx.stroke();
         ctx.restore();
 
         // ---------------------------------------------------------
-        // C. TWINKLING STARS IN DARK SKY PATCHES
+        // D. SUBTLE TWINKLING STARS
         // ---------------------------------------------------------
         ctx.save();
         for (let i = 0; i < stars.length; i++) {
           const star = stars[i];
-          const sx = star.xRatio * width + smoothMouseNormX * 5;
-          const sy = star.yRatio * oceanHorizonY + smoothMouseNormY * 3;
+          const sx = star.xRatio * width + smoothMouseNormX * 4;
+          const sy = star.yRatio * oceanHorizonY + smoothMouseNormY * 2.5;
 
           const twinkle = Math.sin(time * star.twinkleSpeed * 60 + star.twinklePhase);
-          const alpha = Math.max(0.12, Math.min(0.95, star.baseAlpha + twinkle * 0.35));
+          const alpha = Math.max(0.1, Math.min(0.85, star.baseAlpha + twinkle * 0.28));
 
-          ctx.fillStyle = `rgba(224, 242, 254, ${alpha})`;
+          ctx.fillStyle = `rgba(224, 238, 255, ${alpha})`;
           ctx.beginPath();
           ctx.arc(sx, sy, star.size, 0, Math.PI * 2);
           ctx.fill();
 
-          if (star.hasSpike && alpha > 0.65) {
-            ctx.strokeStyle = `rgba(224, 242, 254, ${alpha * 0.45})`;
-            ctx.lineWidth = 0.55;
-            const spk = star.size * 2.4;
+          if (star.hasSpike && alpha > 0.55) {
+            ctx.strokeStyle = `rgba(224, 238, 255, ${alpha * 0.35})`;
+            ctx.lineWidth = 0.5;
+            const spk = star.size * 2.0;
             ctx.beginPath();
             ctx.moveTo(sx - spk, sy);
             ctx.lineTo(sx + spk, sy);
@@ -386,52 +383,25 @@ export const NatureBackground: React.FC = () => {
         ctx.restore();
 
         // ---------------------------------------------------------
-        // D. SUBTLE DRIFTING ATMOSPHERIC MIST
-        // ---------------------------------------------------------
-        ctx.save();
-        driftingMists.forEach((mist) => {
-          if (!prefersReducedMotion) {
-            mist.xRatio += (mist.speedX * 0.016) / 45;
-            if (mist.xRatio > 1.3) mist.xRatio = -0.3;
-          }
-
-          const mx = mist.xRatio * width + smoothMouseNormX * 10;
-          const my = mist.yRatio * height - scrollPixelOffset * 0.05 + smoothMouseNormY * 5;
-          const mw = mist.wRatio * width;
-          const mh = mist.hRatio * height;
-
-          const mistGrad = ctx.createRadialGradient(mx, my, mh * 0.1, mx, my, mw * 0.5);
-          mistGrad.addColorStop(0, `rgba(186, 224, 255, ${mist.opacity})`);
-          mistGrad.addColorStop(0.5, `rgba(147, 197, 253, ${mist.opacity * 0.4})`);
-          mistGrad.addColorStop(1, 'transparent');
-
-          ctx.fillStyle = mistGrad;
-          ctx.beginPath();
-          ctx.ellipse(mx, my, mw * 0.5, mh * 0.5, 0, 0, Math.PI * 2);
-          ctx.fill();
-        });
-        ctx.restore();
-
-        // ---------------------------------------------------------
-        // E. ASCENDING FLOCK OF BIRDS
+        // E. SMALL, DISTANT & SUBTLE FLYING BIRDS
         // ---------------------------------------------------------
         if (!prefersReducedMotion) {
-          flockBaseX += 0.45 + smoothMouseNormX * 0.1;
-          flockBaseY += Math.sin(time * 0.7) * 0.1;
+          flockBaseX += 0.35 + smoothMouseNormX * 0.08;
+          flockBaseY += Math.sin(time * 0.6) * 0.08;
 
-          if (flockBaseX > width + 120) {
-            flockBaseX = -120;
-            flockBaseY = height * 0.18 + Math.random() * (height * 0.12);
+          if (flockBaseX > width + 100) {
+            flockBaseX = -100;
+            flockBaseY = height * 0.16 + Math.random() * (height * 0.12);
           }
         }
 
-        birds.forEach((b) => {
+        smallBirds.forEach((b) => {
           if (!prefersReducedMotion) {
             b.glideTimer++;
             if (b.glideTimer > b.glideDuration) {
               b.isGliding = !b.isGliding;
               b.glideTimer = 0;
-              b.glideDuration = b.isGliding ? 70 + Math.random() * 80 : 80 + Math.random() * 100;
+              b.glideDuration = b.isGliding ? 80 + Math.random() * 80 : 80 + Math.random() * 100;
             }
 
             if (!b.isGliding) {
@@ -439,38 +409,39 @@ export const NatureBackground: React.FC = () => {
             }
           }
 
-          const bx = flockBaseX + b.relX + smoothMouseNormX * 7;
-          const by = flockBaseY + b.relY - scrollPixelOffset * 0.08 + smoothMouseNormY * 5;
+          const bx = flockBaseX + b.relX + smoothMouseNormX * 5;
+          const by = flockBaseY + b.relY - scrollPixelOffset * 0.06 + smoothMouseNormY * 4;
 
           ctx.save();
           ctx.translate(bx, by);
-          ctx.rotate(-0.24); // Ascending diagonal orientation
+          ctx.rotate(-0.24); // Graceful ascending diagonal orientation
           ctx.scale(b.scale, b.scale);
 
-          const flapAngle = b.isGliding ? 0.08 : Math.sin(b.flapPhase) * 0.72;
+          const flapAngle = b.isGliding ? 0.06 : Math.sin(b.flapPhase) * 0.68;
 
-          ctx.fillStyle = 'rgba(240, 248, 255, 0.88)';
-          ctx.strokeStyle = 'rgba(240, 248, 255, 0.95)';
-          ctx.lineWidth = 1.25;
+          // Subtle, natural silver bird silhouette
+          ctx.fillStyle = `rgba(235, 245, 255, ${b.opacity})`;
+          ctx.strokeStyle = `rgba(235, 245, 255, ${b.opacity * 0.9})`;
+          ctx.lineWidth = 0.9;
 
-          // Slender body
+          // Tiny slender body
           ctx.beginPath();
-          ctx.ellipse(0, 0, 5.0, 1.5, 0, 0, Math.PI * 2);
+          ctx.ellipse(0, 0, 4.4, 1.3, 0, 0, Math.PI * 2);
           ctx.fill();
 
           // Left gull wing
           ctx.beginPath();
           ctx.moveTo(-1, 0);
-          ctx.quadraticCurveTo(-10, flapAngle * 14 - 3, -20, flapAngle * 17);
-          ctx.quadraticCurveTo(-11, flapAngle * 10 - 2, 0, 0);
+          ctx.quadraticCurveTo(-9, flapAngle * 12 - 2.5, -17, flapAngle * 15);
+          ctx.quadraticCurveTo(-10, flapAngle * 9 - 1.5, 0, 0);
           ctx.fill();
           ctx.stroke();
 
           // Right gull wing
           ctx.beginPath();
           ctx.moveTo(1, 0);
-          ctx.quadraticCurveTo(10, flapAngle * 14 - 3, 20, flapAngle * 17);
-          ctx.quadraticCurveTo(11, flapAngle * 10 - 2, 0, 0);
+          ctx.quadraticCurveTo(9, flapAngle * 12 - 2.5, 17, flapAngle * 15);
+          ctx.quadraticCurveTo(10, flapAngle * 9 - 1.5, 0, 0);
           ctx.fill();
           ctx.stroke();
 
@@ -478,47 +449,45 @@ export const NatureBackground: React.FC = () => {
         });
 
         // ---------------------------------------------------------
-        // F. LIVING WATER SHIMMER & MOONLIGHT REFLECTIONS
+        // F. SUBTLE, REALISTIC MOONLIGHT REFLECTIONS ON OCEAN
         // ---------------------------------------------------------
         ctx.save();
-        // Horizon subtle sheen line directly under the moon
-        const sheenW = 280;
-        const horizonSheenGrad = ctx.createLinearGradient(
+        // Delicate horizon shimmer line
+        const sheenW = 220;
+        const horizonSheen = ctx.createLinearGradient(
           moonX - sheenW * 0.5,
           oceanHorizonY,
           moonX + sheenW * 0.5,
           oceanHorizonY
         );
-        horizonSheenGrad.addColorStop(0, 'rgba(255, 255, 255, 0.0)');
-        horizonSheenGrad.addColorStop(0.35, 'rgba(224, 242, 254, 0.45)');
-        horizonSheenGrad.addColorStop(0.5, 'rgba(255, 255, 255, 0.85)');
-        horizonSheenGrad.addColorStop(0.65, 'rgba(224, 242, 254, 0.45)');
-        horizonSheenGrad.addColorStop(1, 'rgba(255, 255, 255, 0.0)');
+        horizonSheen.addColorStop(0, 'rgba(255, 255, 255, 0.0)');
+        horizonSheen.addColorStop(0.35, 'rgba(219, 239, 254, 0.35)');
+        horizonSheen.addColorStop(0.5, 'rgba(255, 255, 255, 0.65)');
+        horizonSheen.addColorStop(0.65, 'rgba(219, 239, 254, 0.35)');
+        horizonSheen.addColorStop(1, 'rgba(255, 255, 255, 0.0)');
 
-        ctx.strokeStyle = horizonSheenGrad;
-        ctx.lineWidth = 1.8;
+        ctx.strokeStyle = horizonSheen;
+        ctx.lineWidth = 1.2;
         ctx.beginPath();
         ctx.moveTo(moonX - sheenW * 0.5, oceanHorizonY);
         ctx.lineTo(moonX + sheenW * 0.5, oceanHorizonY);
         ctx.stroke();
 
-        // Shimmering specular glints along the ocean reflection glade
-        shimmerGlints.forEach((glint) => {
+        // Subtle water glints
+        waterGlints.forEach((glint) => {
           const d = glint.depthRatio;
-          const gy = oceanHorizonY + Math.pow(d, 1.55) * oceanH;
+          const gy = oceanHorizonY + Math.pow(d, 1.5) * oceanH;
 
-          // Corridor expands toward foreground in perspective
-          const corridorSpread = 90 + d * 280;
-          const gx = moonX + glint.corridorOffset * corridorSpread + smoothMouseNormX * 7;
+          const corridorSpread = 70 + d * 220;
+          const gx = moonX + glint.corridorOffset * corridorSpread + smoothMouseNormX * 5;
 
-          // Natural harmonic wave sparkle
           const sparkle = Math.sin(time * 60 * glint.speed + glint.phase);
           const glintAlpha =
-            Math.max(0.04, Math.min(1.0, 0.45 + sparkle * 0.55)) *
-            glint.alpha *
-            curTheme.shimmerBoost;
+            Math.max(0.04, Math.min(1.0, 0.35 + sparkle * 0.45)) *
+            glint.baseAlpha *
+            curProfile.oceanShimmerAlpha;
 
-          if (glintAlpha <= 0.06) return;
+          if (glintAlpha <= 0.05) return;
 
           const glintGrad = ctx.createLinearGradient(
             gx - glint.length * 0.5,
@@ -527,7 +496,7 @@ export const NatureBackground: React.FC = () => {
             gy
           );
           glintGrad.addColorStop(0, 'rgba(255, 255, 255, 0.0)');
-          glintGrad.addColorStop(0.5, `rgba(255, 255, 255, ${glintAlpha * 0.95})`);
+          glintGrad.addColorStop(0.5, `rgba(240, 248, 255, ${glintAlpha * 0.85})`);
           glintGrad.addColorStop(1, 'rgba(255, 255, 255, 0.0)');
 
           ctx.fillStyle = glintGrad;
@@ -537,39 +506,32 @@ export const NatureBackground: React.FC = () => {
             glint.length,
             glint.thickness
           );
-
-          // Subtle cyan-blue specular halo on prominent foreground glints
-          if (d > 0.45 && glintAlpha > 0.65) {
-            ctx.fillStyle = `rgba(186, 230, 253, ${glintAlpha * 0.2})`;
-            ctx.beginPath();
-            ctx.ellipse(gx, gy, glint.length * 0.4, glint.thickness * 2.0, 0, 0, Math.PI * 2);
-            ctx.fill();
-          }
         });
         ctx.restore();
       } else {
-        // Fallback dark gradient before image loads
+        // Fallback dark midnight gradient before image loads
         const fallbackGrad = ctx.createLinearGradient(0, 0, 0, height);
-        fallbackGrad.addColorStop(0, '#020718');
-        fallbackGrad.addColorStop(0.65, '#071d44');
-        fallbackGrad.addColorStop(1, '#020916');
+        fallbackGrad.addColorStop(0, '#020512');
+        fallbackGrad.addColorStop(0.65, '#05132b');
+        fallbackGrad.addColorStop(1, '#01040d');
         ctx.fillStyle = fallbackGrad;
         ctx.fillRect(0, 0, width, height);
       }
 
       // -----------------------------------------------------------
       // G. CALIBRATED VIGNETTE (Readability & Professional Depth)
+      // Ensures background remains visually secondary to hero content
       // -----------------------------------------------------------
       const vignette = ctx.createRadialGradient(
         width / 2,
         height / 2,
-        Math.min(width, height) * 0.42,
+        Math.min(width, height) * 0.4,
         width / 2,
         height / 2,
-        Math.max(width, height) * 0.85
+        Math.max(width, height) * 0.88
       );
-      vignette.addColorStop(0, 'rgba(2, 6, 18, 0.16)');
-      vignette.addColorStop(1, 'rgba(2, 5, 16, 0.72)');
+      vignette.addColorStop(0, 'rgba(2, 5, 16, 0.22)');
+      vignette.addColorStop(1, 'rgba(1, 4, 12, 0.82)');
 
       ctx.fillStyle = vignette;
       ctx.fillRect(0, 0, width, height);
