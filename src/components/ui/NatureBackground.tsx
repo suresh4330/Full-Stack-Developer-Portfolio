@@ -2,29 +2,23 @@ import React, { useEffect, useRef } from 'react';
 import { useScroll } from 'framer-motion';
 
 /**
- * Interactive NatureBackground
- * A living, breathing natural environment with real-time mouse, cursor wake,
- * and scroll-driven physics.
+ * Cinematic Night Sky with Realistic Aurora Borealis, Volumetric Clouds,
+ * Crescent Moon & Distant Birds.
  *
- * Real-time Interactions:
- * 1. Interactive Birds:
- *    - Real-time steering away from or banking around cursor proximity.
- *    - Dynamic aerodynamic banking angle (Math.atan2(vy, vx)).
- *    - Panic flapping when startled by rapid cursor movement.
- *    - Autonomous boids-style wander and gliding transitions.
- * 2. Wind & Cursor Wake:
- *    - Cursor movement creates virtual wind currents that affect clouds and leaves.
- * 3. Reactive Leaves:
- *    - Displaced by mouse wake turbulence; leaves scatter and tumble when cursor brushes past.
- * 4. Elegant Swift Silhouettes:
- *    - Small dark swifts wander gracefully in gentle sine-wave arcs.
- * 5. Dynamic Sun & God Rays:
- *    - Atmospheric light rays dynamically pivot based on cursor position.
- *    - Ambient bloom reacts to cursor proximity to the horizon.
- * 6. Multi-Layer Parallax:
- *    - Far mountains, high cirrus, mid cumulus, and foreground leaves move at distinct depth scales.
- * 7. Day-to-Sunset-to-Twilight Palette:
- *    - Fluid environmental color transition linked smoothly to page scroll.
+ * Exact visual match to the reference artwork:
+ * - Deep midnight / twilight navy sky with smooth atmospheric color grading.
+ * - Twinkling starfield with subtle diamond & cool-blue stellar points.
+ * - Glowing waxing crescent moon with soft volumetric lunar scattering & corona.
+ * - Multi-curtain Aurora Borealis ribbons:
+ *     * Vivid Emerald & Electric Cyan primary drapery undulating across upper-right/mid sky.
+ *     * Ethereal Magenta & Violet crest dancing atop the emerald curtain.
+ *     * Lower Horizon Emerald River glowing between the cumulus cloud bank.
+ *     * Whispering teal stream near the moon.
+ * - Volumetric moonlit clouds:
+ *     * Wispy mid-altitude stratocumulus drifting under the moon with silver rim lighting.
+ *     * Photorealistic dark horizon cumulus cloud bank silhouetted against the lower aurora.
+ * - Realistic distant birds with natural flap/glide aerodynamics and gentle banking.
+ * - Mouse parallax & scroll-driven nocturnal mood transitions.
  */
 export const NatureBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -45,16 +39,18 @@ export const NatureBackground: React.FC = () => {
       if (!canvas) return;
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
+      initStars();
+      initClouds();
     };
     window.addEventListener('resize', handleResize);
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     // -------------------------------------------------------------
-    // 1. MOUSE, VELOCITY & VIRTUAL WIND TRACKING
+    // 1. MOUSE TRACKING & PARALLAX SMOOTHING
     // -------------------------------------------------------------
     let mouseX = width * 0.5;
-    let mouseY = height * 0.3;
+    let mouseY = height * 0.35;
     let prevMouseX = mouseX;
     let prevMouseY = mouseY;
     let mouseVx = 0;
@@ -65,26 +61,22 @@ export const NatureBackground: React.FC = () => {
     let smoothMouseNormY = 0;
 
     const handleMouseMove = (e: MouseEvent) => {
-      const currentX = e.clientX;
-      const currentY = e.clientY;
-
-      mouseVx = currentX - prevMouseX;
-      mouseVy = currentY - prevMouseY;
-      mouseSpeed = Math.min(Math.hypot(mouseVx, mouseVy), 35);
-
-      prevMouseX = mouseX = currentX;
-      prevMouseY = mouseY = currentY;
+      const cx = e.clientX;
+      const cy = e.clientY;
+      mouseVx = cx - prevMouseX;
+      mouseVy = cy - prevMouseY;
+      mouseSpeed = Math.min(Math.hypot(mouseVx, mouseVy), 30);
+      prevMouseX = mouseX = cx;
+      prevMouseY = mouseY = cy;
     };
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
-    // Touch support for mobile interaction
     const handleTouchMove = (e: TouchEvent) => {
       if (e.touches.length > 0) {
         const touch = e.touches[0];
         mouseVx = touch.clientX - prevMouseX;
         mouseVy = touch.clientY - prevMouseY;
-        mouseSpeed = Math.min(Math.hypot(mouseVx, mouseVy), 35);
-
+        mouseSpeed = Math.min(Math.hypot(mouseVx, mouseVy), 30);
         prevMouseX = mouseX = touch.clientX;
         prevMouseY = mouseY = touch.clientY;
       }
@@ -92,70 +84,60 @@ export const NatureBackground: React.FC = () => {
     window.addEventListener('touchmove', handleTouchMove, { passive: true });
 
     // -------------------------------------------------------------
-    // 2. SKY THEMES (Dawn -> Day -> Sunset -> Twilight)
+    // 2. SKY THEMES (Nocturnal Palette Transitions via Scroll)
     // -------------------------------------------------------------
     interface SkyTheme {
       top: string;
       mid: string;
       bottom: string;
-      mountainFar: string;
-      mountainNear: string;
-      sunColor: string;
-      sunRayColor: string;
-      cloudColor: string;
+      horizonGlow: string;
+      auroraIntensity: number;
+      magentaBoost: number;
     }
 
     const skyThemes: Array<{ threshold: number; theme: SkyTheme }> = [
       {
-        threshold: 0.0, // Hero: Golden Dawn
+        threshold: 0.0, // Hero: Deep Cosmic Midnight with Peak Aurora
         theme: {
-          top: '#06131c',
-          mid: '#0c222c',
-          bottom: '#183638',
-          mountainFar: 'rgba(8, 28, 34, 0.45)',
-          mountainNear: 'rgba(5, 18, 22, 0.7)',
-          sunColor: 'rgba(251, 191, 36, 0.18)',
-          sunRayColor: 'rgba(245, 158, 11, 0.045)',
-          cloudColor: 'rgba(254, 243, 199, 0.055)',
+          top: '#020612',
+          mid: '#06162d',
+          bottom: '#092442',
+          horizonGlow: 'rgba(6, 40, 52, 0.4)',
+          auroraIntensity: 1.0,
+          magentaBoost: 1.0,
         },
       },
       {
-        threshold: 0.32, // Frontend & Backend: Clear Azure Sky
+        threshold: 0.33, // Frontend/Backend: Electric Cyan Nocturne
         theme: {
-          top: '#051124',
-          mid: '#0b1d3a',
-          bottom: '#102d4d',
-          mountainFar: 'rgba(8, 25, 48, 0.45)',
-          mountainNear: 'rgba(5, 16, 32, 0.7)',
-          sunColor: 'rgba(56, 189, 248, 0.16)',
-          sunRayColor: 'rgba(56, 189, 248, 0.04)',
-          cloudColor: 'rgba(224, 242, 254, 0.06)',
+          top: '#020917',
+          mid: '#051b36',
+          bottom: '#0a2e50',
+          horizonGlow: 'rgba(8, 52, 66, 0.45)',
+          auroraIntensity: 0.95,
+          magentaBoost: 0.85,
         },
       },
       {
-        threshold: 0.68, // Projects & Workflow: Rose Sunset
+        threshold: 0.68, // Projects/Workflow: Cosmic Violet & Emerald
         theme: {
-          top: '#120824',
-          mid: '#230e36',
-          bottom: '#3b143c',
-          mountainFar: 'rgba(28, 10, 38, 0.45)',
-          mountainNear: 'rgba(18, 6, 26, 0.7)',
-          sunColor: 'rgba(244, 63, 94, 0.18)',
-          sunRayColor: 'rgba(251, 113, 133, 0.045)',
-          cloudColor: 'rgba(253, 226, 236, 0.055)',
+          top: '#05071a',
+          mid: '#091535',
+          bottom: '#12254a',
+          horizonGlow: 'rgba(18, 38, 70, 0.4)',
+          auroraIntensity: 0.9,
+          magentaBoost: 1.15,
         },
       },
       {
-        threshold: 1.0, // Experience & Contact: Deep Starry Twilight
+        threshold: 1.0, // Experience/Contact: Deep Celestial Twilight
         theme: {
-          top: '#030614',
-          mid: '#070f26',
-          bottom: '#0e1836',
-          mountainFar: 'rgba(7, 12, 32, 0.45)',
-          mountainNear: 'rgba(4, 7, 20, 0.75)',
-          sunColor: 'rgba(129, 140, 248, 0.14)',
-          sunRayColor: 'rgba(165, 180, 252, 0.035)',
-          cloudColor: 'rgba(199, 210, 254, 0.045)',
+          top: '#01040f',
+          mid: '#041026',
+          bottom: '#081c3c',
+          horizonGlow: 'rgba(4, 32, 45, 0.35)',
+          auroraIntensity: 0.85,
+          magentaBoost: 0.9,
         },
       },
     ];
@@ -179,9 +161,55 @@ export const NatureBackground: React.FC = () => {
     };
 
     // -------------------------------------------------------------
-    // 3. INTERACTIVE BIRDS WITH REAL-TIME STEERING & FLAP PHYSICS
+    // 3. TWINKLING STARFIELD
     // -------------------------------------------------------------
-    interface InteractiveBird {
+    interface Star {
+      xRatio: number;
+      yRatio: number;
+      size: number;
+      baseAlpha: number;
+      twinkleSpeed: number;
+      twinklePhase: number;
+      color: string;
+      hasSpike: boolean;
+    }
+
+    let stars: Star[] = [];
+    const initStars = () => {
+      const count = Math.floor(Math.min(width, 1920) * 0.12); // ~180-230 stars
+      const starColors = [
+        'rgba(255, 255, 255,',
+        'rgba(219, 234, 254,', // Ice blue
+        'rgba(186, 230, 253,', // Cool cyan
+        'rgba(233, 213, 255,', // Soft violet
+      ];
+
+      stars = [];
+      for (let i = 0; i < count; i++) {
+        // Bias y toward upper and middle sky (stars fade near horizon haze)
+        const yRatio = Math.pow(Math.random(), 1.25) * 0.82;
+        const color = starColors[Math.floor(Math.random() * starColors.length)];
+        const size = Math.random() < 0.12 ? 1.4 + Math.random() * 0.8 : 0.6 + Math.random() * 0.7;
+        const hasSpike = size > 1.8 && Math.random() < 0.35;
+
+        stars.push({
+          xRatio: Math.random(),
+          yRatio,
+          size,
+          baseAlpha: 0.3 + Math.random() * 0.6,
+          twinkleSpeed: 0.015 + Math.random() * 0.035,
+          twinklePhase: Math.random() * Math.PI * 2,
+          color,
+          hasSpike,
+        });
+      }
+    };
+    initStars();
+
+    // -------------------------------------------------------------
+    // 4. REALISTIC DISTANT BIRDS
+    // -------------------------------------------------------------
+    interface DistantBird {
       x: number;
       y: number;
       vx: number;
@@ -193,380 +221,143 @@ export const NatureBackground: React.FC = () => {
       isGliding: boolean;
       glideDuration: number;
       glideTimer: number;
-      panicTimer: number;
-      bodyAngle: number;
       opacity: number;
+      bodyAngle: number;
+      reactionTimer: number;
     }
 
-    const birdCount = 7;
-    const birds: InteractiveBird[] = [];
+    const birdCount = 6;
+    const birds: DistantBird[] = [];
     for (let i = 0; i < birdCount; i++) {
-      const speedX = 1.3 + Math.random() * 1.3;
+      const speedX = 0.95 + Math.random() * 0.75;
       birds.push({
         x: Math.random() * width,
-        y: 60 + Math.random() * (height * 0.5),
+        y: 80 + Math.random() * (height * 0.52),
         vx: speedX,
-        vy: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.25,
         baseSpeedX: speedX,
-        scale: 0.65 + Math.random() * 0.65,
-        flapRate: 0.09 + Math.random() * 0.04,
+        scale: 0.35 + Math.random() * 0.32, // Distant scale
+        flapRate: 0.08 + Math.random() * 0.03,
         flapPhase: Math.random() * Math.PI * 2,
-        isGliding: false,
-        glideDuration: 90 + Math.random() * 100,
+        isGliding: Math.random() > 0.4,
+        glideDuration: 80 + Math.random() * 120,
         glideTimer: 0,
-        panicTimer: 0,
+        opacity: 0.45 + Math.random() * 0.25,
         bodyAngle: 0,
-        opacity: 0.7 + Math.random() * 0.25,
-      });
-    }
-
-    // Distant V-Formation Flock
-    interface FlockLeader {
-      x: number;
-      y: number;
-      speedX: number;
-      count: number;
-      spacing: number;
-    }
-
-    const flock: FlockLeader = {
-      x: -120,
-      y: 85,
-      speedX: 0.75,
-      count: 7,
-      spacing: 16,
-    };
-
-    // -------------------------------------------------------------
-    // 4. INTERACTIVE FALLING LEAVES WITH WAKE TURBULENCE
-    // -------------------------------------------------------------
-    interface InteractiveLeaf {
-      x: number;
-      y: number;
-      vx: number;
-      vy: number;
-      baseSpeedY: number;
-      baseSpeedX: number;
-      size: number;
-      angle: number;
-      rotSpeed: number;
-      swayOffset: number;
-      swayRate: number;
-      color: string;
-    }
-
-    const leafPalette = [
-      'rgba(52, 211, 153, 0.65)', // Emerald leaf
-      'rgba(16, 185, 129, 0.6)',
-      'rgba(245, 158, 11, 0.65)', // Amber autumn leaf
-      'rgba(251, 146, 60, 0.6)',
-      'rgba(244, 114, 182, 0.55)', // Blossom petal
-    ];
-
-    const leafCount = 20;
-    const leaves: InteractiveLeaf[] = [];
-    for (let i = 0; i < leafCount; i++) {
-      const sY = 0.7 + Math.random() * 0.8;
-      const sX = 0.3 + Math.random() * 0.6;
-      leaves.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        vx: sX,
-        vy: sY,
-        baseSpeedX: sX,
-        baseSpeedY: sY,
-        size: 5 + Math.random() * 5.5,
-        angle: Math.random() * Math.PI * 2,
-        rotSpeed: (Math.random() - 0.5) * 0.04,
-        swayOffset: Math.random() * Math.PI * 2,
-        swayRate: 0.018 + Math.random() * 0.018,
-        color: leafPalette[Math.floor(Math.random() * leafPalette.length)],
+        reactionTimer: 0,
       });
     }
 
     // -------------------------------------------------------------
-    // 5. ELEGANT SWIFT SILHOUETTES (replacing butterflies)
-    // Small dark swifts that wander gracefully across the sky
+    // 5. VOLUMETRIC MOONLIT CLOUDS & HORIZON CUMULUS BANK
     // -------------------------------------------------------------
-    interface ElegantSwift {
-      x: number;
-      y: number;
-      vx: number;
-      baseY: number;
-      flapPhase: number;
-      flapRate: number;
-      scale: number;
-      opacity: number;
-      wanderOffset: number;
-      wanderRate: number;
+    interface CloudPuff {
+      dx: number;
+      dy: number;
+      radiusX: number;
+      radiusY: number;
+      tilt: number;
     }
 
-    const swifts: ElegantSwift[] = [
-      {
-        x: width * 0.18,
-        y: height * 0.38,
-        vx: 0.55,
-        baseY: height * 0.38,
-        flapPhase: 0,
-        flapRate: 0.14,
-        scale: 0.38,
-        opacity: 0.42,
-        wanderOffset: 0,
-        wanderRate: 0.009,
-      },
-      {
-        x: width * 0.62,
-        y: height * 0.52,
-        vx: 0.48,
-        baseY: height * 0.52,
-        flapPhase: Math.PI,
-        flapRate: 0.17,
-        scale: 0.32,
-        opacity: 0.36,
-        wanderOffset: Math.PI * 0.7,
-        wanderRate: 0.011,
-      },
-      {
-        x: width * 0.4,
-        y: height * 0.65,
-        vx: 0.6,
-        baseY: height * 0.65,
-        flapPhase: Math.PI * 0.5,
-        flapRate: 0.12,
-        scale: 0.28,
-        opacity: 0.3,
-        wanderOffset: Math.PI * 1.3,
-        wanderRate: 0.008,
-      },
-    ];
-
-    // -------------------------------------------------------------
-    // 6. MULTI-LAYER VOLUMETRIC CLOUDS — Realistic moonlit depth
-    // -------------------------------------------------------------
-    interface InteractiveCloud {
+    interface MidCloud {
       x: number;
       y: number;
       width: number;
       height: number;
-      baseSpeedX: number;
-      layer: number;
+      speedX: number;
       opacity: number;
-      puffs: Array<{ rx: number; ry: number; radiusX: number; radiusY: number }>;
+      layer: number;
+      puffs: CloudPuff[];
     }
 
-    // Helper to generate organic puff offsets for a cloud
-    const makePuffs = (w: number, h: number) => {
-      return [
-        { rx: w * 0.18, ry: h * 0.52, radiusX: h * 0.46, radiusY: h * 0.38 },
-        { rx: w * 0.38, ry: h * 0.33, radiusX: h * 0.6,  radiusY: h * 0.52 },
-        { rx: w * 0.57, ry: h * 0.44, radiusX: h * 0.5,  radiusY: h * 0.4  },
-        { rx: w * 0.74, ry: h * 0.56, radiusX: h * 0.38, radiusY: h * 0.3  },
-        { rx: w * 0.5,  ry: h * 0.68, radiusX: h * 0.44, radiusY: h * 0.28 },
-      ];
-    };
+    let midClouds: MidCloud[] = [];
 
-    const clouds: InteractiveCloud[] = [
-      { x: width * 0.04, y: 65,  width: 360, height: 115, baseSpeedX: 0.12, layer: 1, opacity: 0.22, puffs: makePuffs(360, 115) },
-      { x: width * 0.5,  y: 125, width: 460, height: 140, baseSpeedX: 0.2,  layer: 2, opacity: 0.3,  puffs: makePuffs(460, 140) },
-      { x: width * 0.84, y: 50,  width: 320, height: 100, baseSpeedX: 0.15, layer: 1, opacity: 0.18, puffs: makePuffs(320, 100) },
-      { x: width * 0.2,  y: 205, width: 520, height: 160, baseSpeedX: 0.28, layer: 3, opacity: 0.35, puffs: makePuffs(520, 160) },
-      { x: -170,         y: 170, width: 400, height: 130, baseSpeedX: 0.22, layer: 2, opacity: 0.26, puffs: makePuffs(400, 130) },
-    ];
-
-    // Helper: Draw Realistic Volumetric Cloud with Moonlit Radial Gradients
-    const drawCloud = (c: InteractiveCloud, scrollOffset: number, cloudTint: string, mouseParallaxX: number) => {
-      const ox = c.x + mouseParallaxX * c.layer * 0.6;
-      const oy = c.y - scrollOffset * (c.layer * 0.14) + smoothMouseNormY * c.layer * 6;
-
-      // Parse the tint's alpha from e.g. "rgba(254,243,199,0.055)"
-      const tintAlphaMatch = cloudTint.match(/[\d.]+(?=\))/);
-      const tintAlpha = tintAlphaMatch ? parseFloat(tintAlphaMatch[0]) : 0.06;
-      // Moon-lit highlight color: brighter top edge
-      const highlightAlpha = Math.min(tintAlpha * 2.6, 0.18);
-
-      ctx.save();
-      ctx.globalAlpha = c.opacity;
-
-      c.puffs.forEach((puff, pi) => {
-        const px = ox + puff.rx;
-        const py = oy + puff.ry;
-        const rX = puff.radiusX;
-        const rY = puff.radiusY;
-
-        // Moonlight comes from upper-right — gradient center is offset top-right
-        const glx = px + rX * 0.28;
-        const gly = py - rY * 0.35;
-
-        const grad = ctx.createRadialGradient(glx, gly, rX * 0.05, px, py, rX * 1.15);
-        grad.addColorStop(0,   `rgba(230, 240, 255, ${highlightAlpha})`);  // bright moonlit top
-        grad.addColorStop(0.4, cloudTint);                                  // mid-body tint
-        grad.addColorStop(0.75,`rgba(10, 15, 30, ${tintAlpha * 0.5})`);   // soft dark underside
-        grad.addColorStop(1,   'rgba(0, 0, 0, 0)');                        // transparent edge
-
-        ctx.fillStyle = grad;
-        // Draw ellipse-shaped puff
-        ctx.beginPath();
-        ctx.ellipse(px, py, rX, rY, pi % 2 === 0 ? -0.1 : 0.12, 0, Math.PI * 2);
-        ctx.fill();
-      });
-
-      // Soft moonlight edge halo — very subtle brighter rim on the whole cloud top
-      const haloGrad = ctx.createRadialGradient(
-        ox + c.width * 0.55, oy + c.height * 0.15, c.width * 0.08,
-        ox + c.width * 0.5,  oy + c.height * 0.42, c.width * 0.6
-      );
-      haloGrad.addColorStop(0,   `rgba(210, 230, 255, ${highlightAlpha * 0.5})`);
-      haloGrad.addColorStop(0.6, 'rgba(0, 0, 0, 0)');
-      haloGrad.addColorStop(1,   'rgba(0, 0, 0, 0)');
-      ctx.fillStyle = haloGrad;
-      ctx.fillRect(ox - 10, oy - 10, c.width + 20, c.height + 20);
-
-      ctx.restore();
-    };
-
-    // Helper: Draw Bird with Dynamic Aerodynamic Banking
-    const drawBird = (b: InteractiveBird, scrollOffset: number, mouseParallaxX: number) => {
-      const renderX = b.x + mouseParallaxX * 0.7;
-      const renderY = b.y - scrollOffset * 0.16 + smoothMouseNormY * 8;
-
-      ctx.save();
-      ctx.translate(renderX, renderY);
-      ctx.rotate(b.bodyAngle);
-      ctx.scale(b.scale, b.scale);
-
-      ctx.fillStyle = `rgba(226, 232, 240, ${b.opacity})`;
-      ctx.strokeStyle = `rgba(226, 232, 240, ${b.opacity * 0.85})`;
-      ctx.lineWidth = 1.4;
-
-      const flapAngle = b.isGliding ? 0.08 : Math.sin(b.flapPhase) * 0.78;
-
-      // Center bird body
-      ctx.beginPath();
-      ctx.ellipse(0, 0, 4.2, 1.8, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Left Wing with aerodynamic curve
-      ctx.beginPath();
-      ctx.moveTo(-1, 0);
-      ctx.quadraticCurveTo(-11, flapAngle * 15 - 4, -22, flapAngle * 19);
-      ctx.quadraticCurveTo(-12, flapAngle * 11 - 2, 0, 0);
-      ctx.fill();
-      ctx.stroke();
-
-      // Right Wing
-      ctx.beginPath();
-      ctx.moveTo(1, 0);
-      ctx.quadraticCurveTo(11, flapAngle * 15 - 4, 22, flapAngle * 19);
-      ctx.quadraticCurveTo(12, flapAngle * 11 - 2, 0, 0);
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.restore();
-    };
-
-    // Helper: Draw Elegant Swift Silhouette — dark, slim, swept-back wings
-    const drawSwift = (sw: ElegantSwift, scrollOffset: number, mouseParallaxX: number) => {
-      const renderX = sw.x + mouseParallaxX * 1.0;
-      const renderY = sw.y - scrollOffset * 0.19 + smoothMouseNormY * 10;
-
-      ctx.save();
-      ctx.translate(renderX, renderY);
-      ctx.scale(sw.scale, sw.scale);
-
-      const flapAngle = Math.sin(sw.flapPhase) * 0.65;
-
-      ctx.fillStyle = `rgba(160, 185, 215, ${sw.opacity})`;
-      ctx.strokeStyle = `rgba(160, 185, 215, ${sw.opacity * 0.7})`;
-      ctx.lineWidth = 1.1;
-
-      // Tiny elongated body
-      ctx.beginPath();
-      ctx.ellipse(0, 0, 5.5, 1.5, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Left swept-back wing (narrow, long — swift silhouette)
-      ctx.beginPath();
-      ctx.moveTo(-1, 0);
-      ctx.quadraticCurveTo(-8, flapAngle * 12 - 3, -20, flapAngle * 15 + 2);
-      ctx.quadraticCurveTo(-10, flapAngle * 8, 0, 0);
-      ctx.fill();
-
-      // Right swept-back wing
-      ctx.beginPath();
-      ctx.moveTo(1, 0);
-      ctx.quadraticCurveTo(8, flapAngle * 12 - 3, 20, flapAngle * 15 + 2);
-      ctx.quadraticCurveTo(10, flapAngle * 8, 0, 0);
-      ctx.fill();
-
-      // Forked tail
-      ctx.beginPath();
-      ctx.moveTo(-4.5, 0.5);
-      ctx.lineTo(-8, 5.5);
-      ctx.moveTo(-4, 0.3);
-      ctx.lineTo(-6.5, 4.2);
-      ctx.strokeStyle = `rgba(160, 185, 215, ${sw.opacity * 0.6})`;
-      ctx.lineWidth = 0.9;
-      ctx.stroke();
-
-      ctx.restore();
-    };
-
-    // Helper: Draw Layered Mountain Ridge Silhouettes (Atmospheric Horizon)
-    const drawMountains = (theme: SkyTheme, scrollOffset: number, mouseParallaxX: number) => {
-      // Far Mountain Ridge
-      ctx.save();
-      ctx.fillStyle = theme.mountainFar;
-      ctx.beginPath();
-      const baseYFar = height * 0.78 - scrollOffset * 0.06;
-      ctx.moveTo(-50, height);
-      ctx.lineTo(-50, baseYFar);
-
-      const farPoints = [
-        { x: width * 0.1, y: baseYFar - 45 },
-        { x: width * 0.25, y: baseYFar - 15 },
-        { x: width * 0.45, y: baseYFar - 65 },
-        { x: width * 0.65, y: baseYFar - 25 },
-        { x: width * 0.82, y: baseYFar - 75 },
-        { x: width * 1.05, y: baseYFar - 35 },
-      ];
-
-      for (let i = 0; i < farPoints.length - 1; i++) {
-        const xc = (farPoints[i].x + farPoints[i + 1].x) / 2 + mouseParallaxX * 0.25;
-        const yc = (farPoints[i].y + farPoints[i + 1].y) / 2;
-        ctx.quadraticCurveTo(farPoints[i].x + mouseParallaxX * 0.25, farPoints[i].y, xc, yc);
+    // Helper: Generate natural volumetric cloud puff clusters
+    const createPuffCluster = (w: number, h: number, count: number): CloudPuff[] => {
+      const puffs: CloudPuff[] = [];
+      for (let i = 0; i < count; i++) {
+        const ratio = i / (count - 1);
+        const dx = (ratio - 0.5) * (w * 0.85);
+        const centerDist = 1 - Math.abs(ratio - 0.5) * 1.6;
+        const dy = (Math.sin(ratio * Math.PI) - 0.5) * (h * 0.35) + (Math.random() - 0.5) * (h * 0.2);
+        const radiusX = (h * 0.55 + Math.random() * (h * 0.45)) * Math.max(0.4, centerDist);
+        const radiusY = radiusX * (0.45 + Math.random() * 0.25);
+        const tilt = (Math.random() - 0.5) * 0.15;
+        puffs.push({ dx, dy, radiusX, radiusY, tilt });
       }
-      ctx.lineTo(width + 50, height);
-      ctx.closePath();
-      ctx.fill();
-
-      // Near Mountain Ridge
-      ctx.fillStyle = theme.mountainNear;
-      ctx.beginPath();
-      const baseYNear = height * 0.86 - scrollOffset * 0.1;
-      ctx.moveTo(-50, height);
-      ctx.lineTo(-50, baseYNear);
-
-      const nearPoints = [
-        { x: width * 0.18, y: baseYNear - 55 },
-        { x: width * 0.38, y: baseYNear - 20 },
-        { x: width * 0.58, y: baseYNear - 70 },
-        { x: width * 0.78, y: baseYNear - 30 },
-        { x: width * 1.05, y: baseYNear - 60 },
-      ];
-
-      for (let i = 0; i < nearPoints.length - 1; i++) {
-        const xc = (nearPoints[i].x + nearPoints[i + 1].x) / 2 + mouseParallaxX * 0.5;
-        const yc = (nearPoints[i].y + nearPoints[i + 1].y) / 2;
-        ctx.quadraticCurveTo(nearPoints[i].x + mouseParallaxX * 0.5, nearPoints[i].y, xc, yc);
-      }
-      ctx.lineTo(width + 50, height);
-      ctx.closePath();
-      ctx.fill();
-      ctx.restore();
+      return puffs;
     };
+
+    const initClouds = () => {
+      midClouds = [
+        // Cloud 1: Drifts right beneath / across the moon (matches reference)
+        {
+          x: width * 0.14,
+          y: height * 0.48,
+          width: 480,
+          height: 120,
+          speedX: 0.08,
+          opacity: 0.42,
+          layer: 2,
+          puffs: createPuffCluster(480, 120, 7),
+        },
+        // Cloud 2: Upper left wispy cloud
+        {
+          x: width * 0.02,
+          y: height * 0.26,
+          width: 520,
+          height: 110,
+          speedX: 0.06,
+          opacity: 0.32,
+          layer: 1,
+          puffs: createPuffCluster(520, 110, 8),
+        },
+        // Cloud 3: Mid-sky soft cloud picking up aurora glow
+        {
+          x: width * 0.48,
+          y: height * 0.38,
+          width: 560,
+          height: 130,
+          speedX: 0.09,
+          opacity: 0.35,
+          layer: 2,
+          puffs: createPuffCluster(560, 130, 8),
+        },
+        // Cloud 4: Upper-right wispy layer interweaving with aurora
+        {
+          x: width * 0.72,
+          y: height * 0.18,
+          width: 440,
+          height: 95,
+          speedX: 0.05,
+          opacity: 0.28,
+          layer: 1,
+          puffs: createPuffCluster(440, 95, 6),
+        },
+      ];
+    };
+    initClouds();
+
+    // Pre-calculate Horizon Cumulus Bank Silhouettes (Bottom 25% of viewport)
+    interface HorizonCumulusPuff {
+      xRatio: number;
+      baseYOffset: number;
+      rx: number;
+      ry: number;
+    }
+
+    const horizonPuffs: HorizonCumulusPuff[] = [];
+    const puffSteps = 28;
+    for (let i = 0; i <= puffSteps; i++) {
+      const xRatio = i / puffSteps;
+      const rx = 55 + Math.sin(i * 1.8) * 25 + Math.cos(i * 3.4) * 15;
+      const ry = 42 + Math.cos(i * 2.1) * 18 + Math.sin(i * 4.2) * 10;
+      const baseYOffset = 18 + Math.sin(i * 0.9) * 22 + Math.cos(i * 2.7) * 14;
+      horizonPuffs.push({ xRatio, baseYOffset, rx, ry });
+    }
 
     // -------------------------------------------------------------
-    // 7. MAIN INTERACTIVE SIMULATION & RENDER LOOP
+    // 6. MAIN SIMULATION & RENDER LOOP
     // -------------------------------------------------------------
     let currentScroll = 0;
     let targetScroll = 0;
@@ -580,26 +371,23 @@ export const NatureBackground: React.FC = () => {
     const render = () => {
       time += 0.016;
 
-      // Decay mouse speed over time
+      // Mouse smoothing & inertia decay
       mouseSpeed *= 0.94;
       mouseVx *= 0.88;
       mouseVy *= 0.88;
 
-      // Smooth normalized mouse offset [-1, 1]
       const targetNormX = (mouseX / width - 0.5) * 2;
       const targetNormY = (mouseY / height - 0.5) * 2;
-      smoothMouseNormX += (targetNormX - smoothMouseNormX) * 0.08;
-      smoothMouseNormY += (targetNormY - smoothMouseNormY) * 0.08;
-
-      const mouseParallaxX = smoothMouseNormX * 18;
+      smoothMouseNormX += (targetNormX - smoothMouseNormX) * 0.06;
+      smoothMouseNormY += (targetNormY - smoothMouseNormY) * 0.06;
 
       // Smooth scroll interpolation
       currentScroll += (targetScroll - currentScroll) * 0.065;
-      const scrollPixelOffset = currentScroll * height * 1.5;
+      const scrollPixelOffset = currentScroll * height * 0.85;
 
-      // -------------------------------------------------------------
-      // Calculate Sky Theme Color based on Scroll Progress
-      // -------------------------------------------------------------
+      // -----------------------------------------------------------
+      // A. COMPUTE SKY THEME (Dynamic scroll transitions)
+      // -----------------------------------------------------------
       let themeIdx = 0;
       for (let i = 0; i < skyThemes.length - 1; i++) {
         if (currentScroll >= skyThemes[i].threshold && currentScroll <= skyThemes[i + 1].threshold) {
@@ -616,141 +404,352 @@ export const NatureBackground: React.FC = () => {
       const curSkyTop = lerpColor(st1.theme.top, st2.theme.top, progressInSpan);
       const curSkyMid = lerpColor(st1.theme.mid, st2.theme.mid, progressInSpan);
       const curSkyBottom = lerpColor(st1.theme.bottom, st2.theme.bottom, progressInSpan);
+      const curAuroraIntensity =
+        st1.theme.auroraIntensity +
+        (st2.theme.auroraIntensity - st1.theme.auroraIntensity) * progressInSpan;
+      const curMagentaBoost =
+        st1.theme.magentaBoost +
+        (st2.theme.magentaBoost - st1.theme.magentaBoost) * progressInSpan;
 
-      // Render Dynamic Sky Gradient
+      // Render Base Night Sky Gradient
       const skyGrad = ctx.createLinearGradient(0, 0, 0, height);
       skyGrad.addColorStop(0, curSkyTop);
-      skyGrad.addColorStop(0.55, curSkyMid);
-      skyGrad.addColorStop(1, curSkyBottom);
+      skyGrad.addColorStop(0.42, curSkyMid);
+      skyGrad.addColorStop(0.82, curSkyBottom);
+      skyGrad.addColorStop(1, '#030a16');
 
       ctx.fillStyle = skyGrad;
       ctx.fillRect(0, 0, width, height);
 
-      // -------------------------------------------------------------
-      // Sun & Interactive God Rays
-      // -------------------------------------------------------------
-      const sunX = width * 0.82 + smoothMouseNormX * 12;
-      const sunY = height * 0.22 - currentScroll * 60 + smoothMouseNormY * 8;
-
-      // Distance from mouse to sun determines bloom expansion
-      const distToSun = Math.hypot(mouseX - sunX, mouseY - sunY);
-      const sunBloomFactor = Math.max(0, 1 - distToSun / 550) * 0.08;
-      const sunRadius = 90 + Math.sin(time * 0.8) * 8 + sunBloomFactor * 80;
-
-      const sunGlow = ctx.createRadialGradient(sunX, sunY, 12, sunX, sunY, sunRadius * 2.8);
-      sunGlow.addColorStop(0, st1.theme.sunColor);
-      sunGlow.addColorStop(0.5, `rgba(251, 191, 36, ${0.04 + sunBloomFactor})`);
-      sunGlow.addColorStop(1, 'transparent');
-
-      ctx.fillStyle = sunGlow;
-      ctx.beginPath();
-      ctx.arc(sunX, sunY, sunRadius * 2.8, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Atmospheric God Rays pivoting dynamically based on cursor
+      // -----------------------------------------------------------
+      // B. TWINKLING STARFIELD
+      // -----------------------------------------------------------
       ctx.save();
-      ctx.translate(sunX, sunY);
-      // Ray angle responds smoothly to mouse X position
-      const interactiveRayAngle = 0.35 + smoothMouseNormX * 0.18 + Math.sin(time * 0.3) * 0.04;
-      ctx.rotate(interactiveRayAngle);
+      const starParallaxX = smoothMouseNormX * 5;
+      const starParallaxY = smoothMouseNormY * 4 - currentScroll * 25;
 
-      for (let r = 0; r < 4; r++) {
-        const rayGrad = ctx.createLinearGradient(0, 0, width * 0.9, 0);
-        rayGrad.addColorStop(0, st1.theme.sunRayColor);
-        rayGrad.addColorStop(0.7, 'rgba(255, 255, 255, 0.012)');
-        rayGrad.addColorStop(1, 'transparent');
+      for (let i = 0; i < stars.length; i++) {
+        const star = stars[i];
+        const sx = star.xRatio * width + starParallaxX;
+        const sy = (star.yRatio * height + starParallaxY + height) % height;
+
+        // Oscillating twinkling brightness
+        const twinkle = Math.sin(time * star.twinkleSpeed * 60 + star.twinklePhase);
+        const alpha = Math.max(0.12, Math.min(1.0, star.baseAlpha + twinkle * 0.35));
+
+        ctx.fillStyle = `${star.color} ${alpha})`;
+        ctx.beginPath();
+        ctx.arc(sx, sy, star.size, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Subtle 4-point cross diffraction spike on select bright stars
+        if (star.hasSpike && alpha > 0.6) {
+          ctx.strokeStyle = `${star.color} ${alpha * 0.45})`;
+          ctx.lineWidth = 0.6;
+          const spikeLen = star.size * 2.8;
+          ctx.beginPath();
+          ctx.moveTo(sx - spikeLen, sy);
+          ctx.lineTo(sx + spikeLen, sy);
+          ctx.moveTo(sx, sy - spikeLen);
+          ctx.lineTo(sx, sy + spikeLen);
+          ctx.stroke();
+        }
+      }
+      ctx.restore();
+
+      // -----------------------------------------------------------
+      // C. REALISTIC AURORA BOREALIS (The Northern Lights)
+      // -----------------------------------------------------------
+      // Rendered with additive / screen blending for luminous atmospheric curtains
+      ctx.save();
+      ctx.globalCompositeOperation = 'screen';
+
+      const mouseWaveInfluence = smoothMouseNormX * 22;
+
+      // --- Ribbon 1: Upper-Right & Mid-Sky Vivid Emerald & Teal Curtain ---
+      const ribbon1BaseY = height * 0.28 - currentScroll * 40 + smoothMouseNormY * 12;
+      const rayCount1 = Math.floor(width / 11);
+      for (let r = 0; r < rayCount1; r++) {
+        const rx = (r / rayCount1) * (width + 120) - 60;
+        const xNorm = rx / width;
+
+        // Only span from 20% to right edge (matching reference image)
+        if (xNorm < 0.18) continue;
+        const envelope = Math.sin(Math.min(1, Math.max(0, (xNorm - 0.18) / 0.82)) * Math.PI);
+
+        // Multi-frequency harmonic wave
+        const wave =
+          Math.sin(rx * 0.0024 + time * 0.38) * 38 +
+          Math.sin(rx * 0.0052 - time * 0.24) * 22 +
+          Math.cos(rx * 0.0012 + time * 0.16) * 16 +
+          mouseWaveInfluence * (xNorm - 0.5);
+
+        const yBase = ribbon1BaseY + wave;
+        const rayH = (140 + Math.sin(rx * 0.009 + time * 0.7) * 45) * envelope * curAuroraIntensity;
+
+        if (rayH <= 4) continue;
+
+        const rayGrad = ctx.createLinearGradient(rx, yBase, rx, yBase - rayH);
+        rayGrad.addColorStop(0, 'rgba(5, 150, 105, 0.0)');
+        rayGrad.addColorStop(0.2, 'rgba(16, 215, 168, 0.18)'); // Vivid Emerald
+        rayGrad.addColorStop(0.55, 'rgba(34, 211, 238, 0.22)'); // Electric Cyan
+        rayGrad.addColorStop(0.85, 'rgba(56, 189, 248, 0.12)'); // Sky Cyan
+        rayGrad.addColorStop(1, 'rgba(14, 165, 233, 0.0)');
 
         ctx.fillStyle = rayGrad;
-        ctx.beginPath();
-        const yOffset = (r - 1.5) * 65;
-        ctx.moveTo(0, yOffset);
-        ctx.lineTo(width * 0.85, yOffset - 75);
-        ctx.lineTo(width * 0.85, yOffset + 75);
-        ctx.closePath();
-        ctx.fill();
+        ctx.fillRect(rx - 7, yBase - rayH, 15, rayH);
       }
-      ctx.restore();
 
-      // Draw Distant Horizon Mountains
-      drawMountains(st1.theme, scrollPixelOffset, mouseParallaxX);
+      // --- Ribbon 2: Ethereal Magenta & Violet Upper Crest ---
+      // Positioned on the upper-right, dancing atop the emerald curtain
+      const ribbon2BaseY = height * 0.21 - currentScroll * 35 + smoothMouseNormY * 8;
+      const rayCount2 = Math.floor(width / 14);
+      for (let r = 0; r < rayCount2; r++) {
+        const rx = (r / rayCount2) * (width + 100) - 50;
+        const xNorm = rx / width;
 
-      // -------------------------------------------------------------
-      // Interactive Multi-Layer Clouds (Wind responds to mouse displacement)
-      // -------------------------------------------------------------
-      const cursorWindX = smoothMouseNormX * 0.25;
-      clouds.forEach((cloud) => {
-        if (!prefersReducedMotion) {
-          cloud.x += cloud.baseSpeedX + cursorWindX * (cloud.layer * 0.4);
-          if (cloud.x > width + 120) {
-            cloud.x = -cloud.width - 60;
-          } else if (cloud.x < -cloud.width - 80) {
-            cloud.x = width + 60;
-          }
-        }
-        drawCloud(cloud, scrollPixelOffset, st1.theme.cloudColor, mouseParallaxX);
-      });
+        if (xNorm < 0.45) continue; // Upper-right concentration
+        const envelope = Math.sin(Math.min(1, Math.max(0, (xNorm - 0.45) / 0.55)) * Math.PI);
 
-      // -------------------------------------------------------------
-      // Distant V-Formation Bird Flock
-      // -------------------------------------------------------------
-      if (!prefersReducedMotion) {
-        flock.x += flock.speedX + cursorWindX * 0.2;
-        if (flock.x > width + 220) {
-          flock.x = -220;
-          flock.y = 70 + Math.random() * 80;
-        }
+        const wave =
+          Math.sin(rx * 0.0031 + time * 0.32 + 1.2) * 32 +
+          Math.cos(rx * 0.0061 - time * 0.21) * 18 +
+          mouseWaveInfluence * 0.8;
+
+        const yBase = ribbon2BaseY + wave;
+        const rayH = (160 + Math.sin(rx * 0.008 + time * 0.55) * 50) * envelope * curMagentaBoost;
+
+        if (rayH <= 4) continue;
+
+        const rayGrad = ctx.createLinearGradient(rx, yBase, rx, yBase - rayH);
+        rayGrad.addColorStop(0, 'rgba(99, 102, 241, 0.0)');
+        rayGrad.addColorStop(0.25, 'rgba(168, 85, 247, 0.18)'); // Radiant Violet
+        rayGrad.addColorStop(0.65, 'rgba(236, 72, 153, 0.17)'); // Luminous Magenta
+        rayGrad.addColorStop(0.9, 'rgba(244, 114, 182, 0.09)');  // Rose Pink
+        rayGrad.addColorStop(1, 'rgba(217, 70, 239, 0.0)');
+
+        ctx.fillStyle = rayGrad;
+        ctx.fillRect(rx - 8, yBase - rayH, 17, rayH);
       }
+
+      // --- Ribbon 3: Lower Horizon Emerald Aurora River ---
+      // Glowing green band weaving right above the bottom cumulus cloud bank
+      const ribbon3BaseY = height * 0.74 - currentScroll * 15 + smoothMouseNormY * 6;
+      const rayCount3 = Math.floor(width / 13);
+      for (let r = 0; r < rayCount3; r++) {
+        const rx = (r / rayCount3) * (width + 80) - 40;
+        const envelope = Math.sin(Math.min(1, Math.max(0, rx / width)) * Math.PI);
+
+        const wave =
+          Math.sin(rx * 0.0028 + time * 0.26 + 2.5) * 24 +
+          Math.cos(rx * 0.0055 - time * 0.19) * 14;
+
+        const yBase = ribbon3BaseY + wave;
+        const rayH = (75 + Math.sin(rx * 0.007 + time * 0.45) * 25) * envelope * curAuroraIntensity;
+
+        const rayGrad = ctx.createLinearGradient(rx, yBase, rx, yBase - rayH);
+        rayGrad.addColorStop(0, 'rgba(5, 150, 105, 0.0)');
+        rayGrad.addColorStop(0.3, 'rgba(16, 215, 168, 0.16)'); // Emerald
+        rayGrad.addColorStop(0.7, 'rgba(20, 184, 166, 0.14)'); // Teal
+        rayGrad.addColorStop(1, 'rgba(6, 182, 212, 0.0)');
+
+        ctx.fillStyle = rayGrad;
+        ctx.fillRect(rx - 8, yBase - rayH, 18, rayH);
+      }
+
+      // --- Ribbon 4: Whispering Teal Stream in Upper-Left Near Moon ---
+      const ribbon4BaseY = height * 0.36 - currentScroll * 30 + smoothMouseNormY * 8;
+      const rayCount4 = Math.floor(width / 16);
+      for (let r = 0; r < rayCount4; r++) {
+        const rx = (r / rayCount4) * (width * 0.52);
+        const xNorm = rx / (width * 0.52);
+        const envelope = Math.sin(xNorm * Math.PI);
+
+        const wave = Math.sin(rx * 0.0035 + time * 0.22) * 22;
+        const yBase = ribbon4BaseY + wave;
+        const rayH = (65 + Math.sin(rx * 0.01 + time * 0.4) * 20) * envelope * curAuroraIntensity;
+
+        if (rayH <= 4) continue;
+
+        const rayGrad = ctx.createLinearGradient(rx, yBase, rx, yBase - rayH);
+        rayGrad.addColorStop(0, 'rgba(6, 182, 212, 0.0)');
+        rayGrad.addColorStop(0.4, 'rgba(20, 184, 166, 0.12)');
+        rayGrad.addColorStop(1, 'rgba(13, 148, 136, 0.0)');
+
+        ctx.fillStyle = rayGrad;
+        ctx.fillRect(rx - 9, yBase - rayH, 19, rayH);
+      }
+
+      ctx.restore(); // Exit screen composite operation
+
+      // -----------------------------------------------------------
+      // D. REALISTIC WAXING MOON & VOLUMETRIC LUNAR SCATTERING
+      // -----------------------------------------------------------
+      // Mid-left position exactly like reference screenshot
+      const moonX = (width < 640 ? width * 0.28 : width * 0.22) + smoothMouseNormX * 8;
+      const moonY =
+        (width < 640 ? height * 0.32 : height * 0.45) -
+        scrollPixelOffset * 0.05 +
+        smoothMouseNormY * 6;
+      const moonRadius = width < 640 ? 13 : 16;
 
       ctx.save();
-      const flockY = flock.y - scrollPixelOffset * 0.08 + smoothMouseNormY * 4;
-      ctx.strokeStyle = 'rgba(203, 213, 225, 0.45)';
-      ctx.lineWidth = 1.1;
 
-      for (let i = 0; i < flock.count; i++) {
-        const isLeftWing = i % 2 === 1;
-        const rank = Math.ceil(i / 2);
-        const bx = flock.x - rank * flock.spacing + mouseParallaxX * 0.3;
-        const by = flockY + (isLeftWing ? -1 : 1) * rank * (flock.spacing * 0.65);
+      // 1. Large Atmospheric Lunar Scattering Halo (Outer mist)
+      const outerHalo = ctx.createRadialGradient(
+        moonX,
+        moonY,
+        moonRadius * 0.5,
+        moonX,
+        moonY,
+        moonRadius * 16
+      );
+      outerHalo.addColorStop(0, 'rgba(186, 230, 253, 0.12)');
+      outerHalo.addColorStop(0.25, 'rgba(147, 197, 253, 0.06)');
+      outerHalo.addColorStop(0.65, 'rgba(56, 189, 248, 0.02)');
+      outerHalo.addColorStop(1, 'transparent');
+      ctx.fillStyle = outerHalo;
+      ctx.beginPath();
+      ctx.arc(moonX, moonY, moonRadius * 16, 0, Math.PI * 2);
+      ctx.fill();
 
-        const distantFlap = Math.sin(time * 4 + i) * 2.5;
-        ctx.beginPath();
-        ctx.moveTo(bx - 4, by + distantFlap);
-        ctx.quadraticCurveTo(bx - 2, by - 2, bx, by);
-        ctx.quadraticCurveTo(bx + 2, by - 2, bx + 4, by + distantFlap);
-        ctx.stroke();
-      }
+      // 2. Bright Inner Lunar Corona
+      const innerCorona = ctx.createRadialGradient(
+        moonX,
+        moonY,
+        moonRadius * 0.2,
+        moonX,
+        moonY,
+        moonRadius * 4.2
+      );
+      innerCorona.addColorStop(0, 'rgba(240, 249, 255, 0.45)');
+      innerCorona.addColorStop(0.35, 'rgba(219, 234, 254, 0.18)');
+      innerCorona.addColorStop(1, 'transparent');
+      ctx.fillStyle = innerCorona;
+      ctx.beginPath();
+      ctx.arc(moonX, moonY, moonRadius * 4.2, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 3. Shaded Dark Lunar Disc (Ash body)
+      ctx.fillStyle = 'rgba(15, 25, 42, 0.88)';
+      ctx.beginPath();
+      ctx.arc(moonX, moonY, moonRadius, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 4. Luminous Waxing Crescent / Gibbous Rim (Bright side on right, matching reference)
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(moonX, moonY, moonRadius, -Math.PI / 2, Math.PI / 2, false);
+      // Elliptical terminator back to top
+      ctx.ellipse(moonX, moonY, moonRadius * 0.32, moonRadius, 0, Math.PI / 2, -Math.PI / 2, false);
+      ctx.closePath();
+
+      const moonFaceGrad = ctx.createLinearGradient(
+        moonX - moonRadius * 0.3,
+        moonY - moonRadius,
+        moonX + moonRadius,
+        moonY + moonRadius
+      );
+      moonFaceGrad.addColorStop(0, '#ffffff');
+      moonFaceGrad.addColorStop(0.5, '#e0f2fe');
+      moonFaceGrad.addColorStop(0.85, '#bae6fd');
+      moonFaceGrad.addColorStop(1, '#93c5fd');
+
+      ctx.fillStyle = moonFaceGrad;
+      ctx.shadowColor = 'rgba(224, 242, 254, 0.9)';
+      ctx.shadowBlur = 14;
+      ctx.fill();
       ctx.restore();
 
-      // -------------------------------------------------------------
-      // Interactive Birds (Real-time Avoidance & Aerodynamic Steering)
-      // -------------------------------------------------------------
+      // Subtle surface crater variation on bright face
+      ctx.fillStyle = 'rgba(147, 197, 253, 0.35)';
+      ctx.beginPath();
+      ctx.arc(moonX + moonRadius * 0.35, moonY - moonRadius * 0.2, moonRadius * 0.22, 0, Math.PI * 2);
+      ctx.arc(moonX + moonRadius * 0.5, moonY + moonRadius * 0.25, moonRadius * 0.18, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+
+      // -----------------------------------------------------------
+      // E. VOLUMETRIC MOONLIT CLOUDS (Mid-Altitude Layers)
+      // -----------------------------------------------------------
+      midClouds.forEach((cloud) => {
+        if (!prefersReducedMotion) {
+          cloud.x += cloud.speedX + smoothMouseNormX * 0.08;
+          if (cloud.x > width + cloud.width * 0.6) {
+            cloud.x = -cloud.width * 0.6;
+          }
+        }
+
+        const cx = cloud.x + smoothMouseNormX * cloud.layer * 10;
+        const cy = cloud.y - scrollPixelOffset * (cloud.layer * 0.12) + smoothMouseNormY * 8;
+
+        ctx.save();
+        ctx.globalAlpha = cloud.opacity;
+
+        cloud.puffs.forEach((puff, idx) => {
+          const px = cx + puff.dx;
+          const py = cy + puff.dy;
+          const rx = puff.radiusX;
+          const ry = puff.radiusY;
+
+          // Moonlit edge lighting from upper-left
+          const lightOffsetX = px - rx * 0.22;
+          const lightOffsetY = py - ry * 0.32;
+
+          const puffGrad = ctx.createRadialGradient(
+            lightOffsetX,
+            lightOffsetY,
+            rx * 0.08,
+            px,
+            py,
+            rx * 1.05
+          );
+
+          // Top edge catch moonlight & subtle aurora scatter
+          puffGrad.addColorStop(0, 'rgba(215, 235, 255, 0.24)');
+          puffGrad.addColorStop(0.35, 'rgba(147, 197, 253, 0.12)');
+          puffGrad.addColorStop(0.7, 'rgba(15, 28, 48, 0.45)'); // Dark atmospheric core
+          puffGrad.addColorStop(1, 'rgba(6, 12, 22, 0.0)');
+
+          ctx.fillStyle = puffGrad;
+          ctx.beginPath();
+          ctx.ellipse(px, py, rx, ry, puff.tilt + (idx % 2 === 0 ? 0.06 : -0.06), 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        ctx.restore();
+      });
+
+      // -----------------------------------------------------------
+      // F. REALISTIC DISTANT BIRDS
+      // -----------------------------------------------------------
       birds.forEach((bird) => {
         if (!prefersReducedMotion) {
-          // Distance from cursor to bird
+          // Subtle mouse avoidance
           const dx = bird.x - mouseX;
           const dy = bird.y - mouseY;
           const dist = Math.hypot(dx, dy);
 
-          // Proximity reaction threshold: 190px
-          if (dist < 190 && dist > 1) {
-            const pushFactor = (1 - dist / 190) * 0.85;
-            bird.vx += (dx / dist) * pushFactor;
-            bird.vy += (dy / dist) * pushFactor;
-            bird.panicTimer = 40; // Trigger panic flap
+          if (dist < 180 && dist > 1) {
+            const push = (1 - dist / 180) * 0.65;
+            bird.vx += (dx / dist) * push;
+            bird.vy += (dy / dist) * push;
+            bird.reactionTimer = 40;
           }
 
-          // Panic flap state
-          if (bird.panicTimer > 0) {
-            bird.panicTimer--;
+          if (bird.reactionTimer > 0) {
+            bird.reactionTimer--;
             bird.isGliding = false;
             bird.flapPhase += bird.flapRate * 1.5;
           } else {
-            // Normal glide vs flap state machine
             bird.glideTimer++;
             if (bird.glideTimer > bird.glideDuration) {
               bird.isGliding = !bird.isGliding;
               bird.glideTimer = 0;
-              bird.glideDuration = bird.isGliding ? 70 + Math.random() * 90 : 90 + Math.random() * 120;
+              bird.glideDuration = bird.isGliding
+                ? 90 + Math.random() * 140
+                : 60 + Math.random() * 90;
             }
 
             if (!bird.isGliding) {
@@ -758,112 +757,132 @@ export const NatureBackground: React.FC = () => {
             }
           }
 
-          // Gentle drag towards base velocity
-          bird.vx += (bird.baseSpeedX - bird.vx) * 0.04;
-          bird.vy += (0 - bird.vy) * 0.04;
+          // Damping back to peaceful horizontal flight
+          bird.vx += (bird.baseSpeedX - bird.vx) * 0.035;
+          bird.vy += (0 - bird.vy) * 0.035;
 
-          // Natural altitude drift
-          bird.y += bird.vy + Math.sin(time * 1.5 + bird.x * 0.01) * 0.25;
           bird.x += bird.vx;
+          bird.y += bird.vy + Math.sin(time * 1.2 + bird.x * 0.008) * 0.18;
 
-          // Compute aerodynamic banking body angle
+          // Aerodynamic banking
           const targetAngle = Math.atan2(bird.vy, bird.vx);
-          bird.bodyAngle += (targetAngle - bird.bodyAngle) * 0.12;
+          bird.bodyAngle += (targetAngle - bird.bodyAngle) * 0.1;
 
-          // Wrap bird across screen
-          if (bird.x > width + 70) {
-            bird.x = -70 - Math.random() * 120;
-            bird.y = 50 + Math.random() * (height * 0.52);
-            bird.vx = bird.baseSpeedX = 1.3 + Math.random() * 1.3;
-            bird.vy = (Math.random() - 0.5) * 0.4;
+          // Screen wrap
+          if (bird.x > width + 60) {
+            bird.x = -60;
+            bird.y = 70 + Math.random() * (height * 0.48);
+            bird.vx = bird.baseSpeedX = 0.95 + Math.random() * 0.75;
           }
         }
 
-        drawBird(bird, scrollPixelOffset, mouseParallaxX);
-      });
-
-      // -------------------------------------------------------------
-      // Elegant Swift Silhouettes (gentle wander, no cursor attraction)
-      // -------------------------------------------------------------
-      swifts.forEach((sw) => {
-        if (!prefersReducedMotion) {
-          sw.flapPhase += sw.flapRate;
-          sw.wanderOffset += sw.wanderRate;
-          sw.x += sw.vx;
-          // Gentle sine-wave altitude drift
-          sw.y = sw.baseY + Math.sin(sw.wanderOffset) * 32;
-
-          if (sw.x > width + 60) {
-            sw.x = -60;
-            sw.baseY = height * 0.3 + Math.random() * (height * 0.42);
-          }
-        }
-
-        drawSwift(sw, scrollPixelOffset, mouseParallaxX);
-      });
-
-      // -------------------------------------------------------------
-      // Interactive Falling Leaves (Reacts to Cursor Wake Turbulence)
-      // -------------------------------------------------------------
-      leaves.forEach((leaf) => {
-        if (!prefersReducedMotion) {
-          // Distance from cursor to leaf
-          const dx = leaf.x - mouseX;
-          const dy = leaf.y - mouseY;
-          const dist = Math.hypot(dx, dy);
-
-          // If cursor sweeps past leaf within 130px, impart turbulence kick
-          if (dist < 130 && dist > 1) {
-            const wakeForce = (1 - dist / 130) * (mouseSpeed * 0.18 + 1.2);
-            leaf.vx += (dx / dist) * wakeForce + mouseVx * 0.08;
-            leaf.vy += (dy / dist) * wakeForce * 0.5;
-            leaf.rotSpeed += (Math.random() - 0.5) * 0.08;
-          }
-
-          // Damping back to peaceful falling
-          leaf.vx += (leaf.baseSpeedX - leaf.vx) * 0.035;
-          leaf.vy += (leaf.baseSpeedY - leaf.vy) * 0.035;
-          leaf.rotSpeed *= 0.98;
-
-          leaf.y += leaf.vy;
-          leaf.x += Math.sin(time * 2 + leaf.swayOffset) * 1.1 + leaf.vx;
-          leaf.angle += leaf.rotSpeed;
-
-          // Wrap off-screen leaves
-          if (leaf.y > height + 25) {
-            leaf.y = -25;
-            leaf.x = Math.random() * width;
-          }
-          if (leaf.x > width + 25) {
-            leaf.x = -25;
-          }
-        }
+        // Draw Bird
+        const bx = bird.x + smoothMouseNormX * 10;
+        const by = bird.y - scrollPixelOffset * 0.14 + smoothMouseNormY * 6;
 
         ctx.save();
-        ctx.translate(leaf.x + mouseParallaxX * 1.1, leaf.y - (scrollPixelOffset % height));
-        ctx.rotate(leaf.angle);
+        ctx.translate(bx, by);
+        ctx.rotate(bird.bodyAngle);
+        ctx.scale(bird.scale, bird.scale);
 
-        ctx.fillStyle = leaf.color;
+        const flapAngle = bird.isGliding ? 0.08 : Math.sin(bird.flapPhase) * 0.72;
+
+        ctx.fillStyle = `rgba(186, 210, 235, ${bird.opacity})`;
+        ctx.strokeStyle = `rgba(186, 210, 235, ${bird.opacity * 0.85})`;
+        ctx.lineWidth = 1.2;
+
+        // Slender bird body
         ctx.beginPath();
-        ctx.ellipse(0, 0, leaf.size, leaf.size * 0.45, Math.PI / 4, 0, Math.PI * 2);
+        ctx.ellipse(0, 0, 4.8, 1.6, 0, 0, Math.PI * 2);
         ctx.fill();
+
+        // Left aerodynamic curved wing
+        ctx.beginPath();
+        ctx.moveTo(-1, 0);
+        ctx.quadraticCurveTo(-10, flapAngle * 14 - 3, -20, flapAngle * 17);
+        ctx.quadraticCurveTo(-11, flapAngle * 10 - 2, 0, 0);
+        ctx.fill();
+        ctx.stroke();
+
+        // Right aerodynamic curved wing
+        ctx.beginPath();
+        ctx.moveTo(1, 0);
+        ctx.quadraticCurveTo(10, flapAngle * 14 - 3, 20, flapAngle * 17);
+        ctx.quadraticCurveTo(11, flapAngle * 10 - 2, 0, 0);
+        ctx.fill();
+        ctx.stroke();
 
         ctx.restore();
       });
 
-      // -------------------------------------------------------------
-      // Vignette Overlay for Crisp Readability
-      // -------------------------------------------------------------
+      // -----------------------------------------------------------
+      // G. PHOTOREALISTIC HORIZON CUMULUS CLOUD BANK (Bottom of screen)
+      // Exact match to reference screenshot's dark silhouette clouds
+      // -----------------------------------------------------------
+      ctx.save();
+      const horizonY = height * 0.84 - scrollPixelOffset * 0.04;
+
+      // Dark silhouette fill from cloud tops down to bottom
+      horizonPuffs.forEach((puff) => {
+        const px = puff.xRatio * width + smoothMouseNormX * 6;
+        const py = horizonY - puff.baseYOffset;
+
+        // Radial puff with subtle silver/teal rim lighting from lower aurora & moon
+        const hGrad = ctx.createRadialGradient(
+          px,
+          py - puff.ry * 0.35,
+          puff.rx * 0.05,
+          px,
+          py,
+          puff.rx
+        );
+        hGrad.addColorStop(0, 'rgba(16, 32, 54, 0.95)'); // Soft dark slate top
+        hGrad.addColorStop(0.4, 'rgba(8, 18, 32, 0.98)');
+        hGrad.addColorStop(1, 'rgba(3, 7, 16, 1.0)');
+
+        ctx.fillStyle = hGrad;
+        ctx.beginPath();
+        ctx.ellipse(px, py, puff.rx * 1.25, puff.ry * 1.1, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Subtle edge highlight along the top rim
+        ctx.strokeStyle = 'rgba(125, 211, 252, 0.12)';
+        ctx.lineWidth = 1.0;
+        ctx.beginPath();
+        ctx.ellipse(
+          px,
+          py,
+          puff.rx * 1.25,
+          puff.ry * 1.1,
+          0,
+          Math.PI * 1.1,
+          Math.PI * 1.9
+        );
+        ctx.stroke();
+      });
+
+      // Deep solid anchor at bottom
+      const bottomCover = ctx.createLinearGradient(0, horizonY + 20, 0, height);
+      bottomCover.addColorStop(0, 'rgba(5, 10, 20, 0.92)');
+      bottomCover.addColorStop(1, 'rgba(2, 5, 12, 0.99)');
+      ctx.fillStyle = bottomCover;
+      ctx.fillRect(0, horizonY + 15, width, height - horizonY);
+
+      ctx.restore();
+
+      // -----------------------------------------------------------
+      // H. CINEMATIC VIGNETTE (Readability & Professional Depth)
+      // -----------------------------------------------------------
       const vignette = ctx.createRadialGradient(
         width / 2,
         height / 2,
-        Math.min(width, height) * 0.35,
+        Math.min(width, height) * 0.38,
         width / 2,
         height / 2,
-        Math.max(width, height) * 0.75
+        Math.max(width, height) * 0.78
       );
-      vignette.addColorStop(0, 'rgba(3, 7, 18, 0.22)');
-      vignette.addColorStop(1, 'rgba(2, 6, 14, 0.78)');
+      vignette.addColorStop(0, 'rgba(2, 6, 14, 0.15)');
+      vignette.addColorStop(1, 'rgba(2, 5, 12, 0.72)');
 
       ctx.fillStyle = vignette;
       ctx.fillRect(0, 0, width, height);
