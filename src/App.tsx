@@ -8,7 +8,6 @@ import { HorizontalMarquee } from './components/ui/HorizontalMarquee';
 import { CommandPalette } from './components/ui/CommandPalette';
 import { AnimationProvider } from './context/AnimationContext';
 import { AnimationControlPanel } from './components/ui/AnimationControlPanel';
-import { FloatingSkillStream } from './components/ui/FloatingSkillStream';
 import { Navbar } from './components/layout/Navbar';
 import { HeroSection } from './components/sections/HeroSection';
 import { AboutSection } from './components/sections/AboutSection';
@@ -60,9 +59,6 @@ export function App() {
 
         {/* Floating Animation & Atmosphere Control System */}
         <AnimationControlPanel />
-
-        {/* Ambient Floating Skill Stream (Drifts gracefully across the page) */}
-        <FloatingSkillStream />
 
         {/* Developer Command Palette (Ctrl+K / Cmd+K) */}
         <CommandPalette

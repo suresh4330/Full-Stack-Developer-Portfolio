@@ -30,7 +30,7 @@ export const HeroSection: React.FC = () => {
   }, []);
 
   return (
-    <section className="relative min-h-[92vh] flex items-center pt-28 pb-20 md:pt-36 md:pb-24 overflow-hidden border-b border-dark-800/80">
+    <section className="relative min-h-[84vh] flex items-center pt-24 pb-8 md:pt-28 md:pb-12 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           
