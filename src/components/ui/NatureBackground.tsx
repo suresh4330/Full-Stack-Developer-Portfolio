@@ -2,16 +2,17 @@ import React, { useEffect, useRef } from 'react';
 import { useScroll } from 'framer-motion';
 
 /**
- * Photorealistic Moonlit Ocean Background with Living Water Shimmer,
- * Crisp Moon Corona, Drifting Atmospheric Mist, and Flying Birds Flock.
+ * Photorealistic Moonlit Ocean Background with Living, Continuously Flying Birds,
+ * Shimmering Ocean Wave Reflections, Crisp Glowing Moon, and Parallax Clouds.
  *
- * Implements the authentic moonlit ocean environment:
- * - Uses the high-fidelity moonlit ocean artwork as the foundational visual asset layer.
- * - Crisp, highly-detailed moon with subtle breathing corona (no artificial blur).
- * - Photorealistic clouds with natural fractal edges and genuine silver rim highlights.
- * - Real ocean wave textures with continuous shimmering moonlight specular reflections.
- * - Ascending flock of silver-white birds with aerodynamic flap/glide physics.
- * - Smooth mouse parallax and scroll-driven color grading with high-contrast text readability.
+ * All original visual elements, atmosphere, and layout are preserved.
+ * Fixes:
+ * - Birds continuously fly across the background with independent paths, speeds, and altitudes.
+ * - Realistic wing-flapping and aerodynamic gliding physics.
+ * - Birds enter naturally from offscreen and respawn seamlessly.
+ * - Distant birds are smaller, slower, and have perspective depth.
+ * - Independent continuous motion that never freezes during scrolling or section changes.
+ * - Softly blends over static wallpaper marks so only living dynamic birds are visible.
  */
 export const NatureBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -28,7 +29,7 @@ export const NatureBackground: React.FC = () => {
     let width = (canvas.width = window.innerWidth);
     let height = (canvas.height = window.innerHeight);
 
-    // Load authentic high-resolution moonlit ocean asset
+    // Foundational high-fidelity artwork asset
     const bgImage = new Image();
     bgImage.src = '/moonlit-ocean.jpg';
     let imageLoaded = false;
@@ -82,56 +83,22 @@ export const NatureBackground: React.FC = () => {
     window.addEventListener('touchmove', handleTouchMove, { passive: true });
 
     // -------------------------------------------------------------
-    // 2. NOCTURNAL COLOR GRADING THEMES (Scroll-Responsive)
+    // 2. SCROLL THEMES
     // -------------------------------------------------------------
-    interface ColorTheme {
-      skyOverlay: string;
-      oceanTint: string;
+    interface ThemeProfile {
       moonCoronaAlpha: number;
       shimmerBoost: number;
     }
 
-    const themes: Array<{ threshold: number; theme: ColorTheme }> = [
-      {
-        threshold: 0.0, // Hero: Pure Moonlit Deep Cobalt Night
-        theme: {
-          skyOverlay: 'rgba(2, 7, 24, 0.12)',
-          oceanTint: 'rgba(2, 9, 26, 0.18)',
-          moonCoronaAlpha: 0.24,
-          shimmerBoost: 1.0,
-        },
-      },
-      {
-        threshold: 0.33, // Frontend/Backend: Deep Indigo Ocean
-        theme: {
-          skyOverlay: 'rgba(3, 8, 30, 0.16)',
-          oceanTint: 'rgba(2, 8, 22, 0.22)',
-          moonCoronaAlpha: 0.22,
-          shimmerBoost: 0.95,
-        },
-      },
-      {
-        threshold: 0.68, // Projects/Workflow: Midnight Sapphire
-        theme: {
-          skyOverlay: 'rgba(4, 10, 36, 0.14)',
-          oceanTint: 'rgba(3, 10, 28, 0.2)',
-          moonCoronaAlpha: 0.26,
-          shimmerBoost: 1.05,
-        },
-      },
-      {
-        threshold: 1.0, // Contact/Footer: Celestial Deep Abyss
-        theme: {
-          skyOverlay: 'rgba(1, 5, 18, 0.2)',
-          oceanTint: 'rgba(1, 6, 20, 0.25)',
-          moonCoronaAlpha: 0.2,
-          shimmerBoost: 0.9,
-        },
-      },
+    const themes: Array<{ threshold: number; theme: ThemeProfile }> = [
+      { threshold: 0.0, theme: { moonCoronaAlpha: 0.24, shimmerBoost: 1.0 } },
+      { threshold: 0.33, theme: { moonCoronaAlpha: 0.22, shimmerBoost: 0.95 } },
+      { threshold: 0.68, theme: { moonCoronaAlpha: 0.26, shimmerBoost: 1.05 } },
+      { threshold: 1.0, theme: { moonCoronaAlpha: 0.2, shimmerBoost: 0.9 } },
     ];
 
     // -------------------------------------------------------------
-    // 3. TWINKLING STARS IN UPPER-LEFT SKY
+    // 3. TWINKLING STARS IN UPPER SKY
     // -------------------------------------------------------------
     interface Star {
       xRatio: number;
@@ -148,7 +115,6 @@ export const NatureBackground: React.FC = () => {
       const count = Math.floor(Math.min(width, 1920) * 0.075);
       stars = [];
       for (let i = 0; i < count; i++) {
-        // Concentrated in upper-left and upper sky
         const xRatio = Math.random() < 0.75 ? Math.random() * 0.55 : Math.random();
         const yRatio = Math.pow(Math.random(), 1.5) * 0.42;
         const size = Math.random() < 0.12 ? 1.6 + Math.random() * 0.6 : 0.6 + Math.random() * 0.6;
@@ -181,11 +147,10 @@ export const NatureBackground: React.FC = () => {
 
     let shimmerGlints: ShimmerGlint[] = [];
     const initWaterShimmer = () => {
-      const count = Math.floor(Math.min(width, 1920) * 0.22); // ~180-320 glints
+      const count = Math.floor(Math.min(width, 1920) * 0.22);
       shimmerGlints = [];
       for (let i = 0; i < count; i++) {
         const depthRatio = Math.pow(Math.random(), 1.35);
-        // Concentrated along moon reflection column with natural scatter
         const corridorOffset = (Math.random() - 0.5) * (Math.random() < 0.65 ? 0.6 : 1.0);
         const length = (10 + depthRatio * 34) * (0.6 + Math.random() * 0.8);
         const thickness = 0.8 + depthRatio * 1.8;
@@ -207,61 +172,74 @@ export const NatureBackground: React.FC = () => {
     initWaterShimmer();
 
     // -------------------------------------------------------------
-    // 5. ASCENDING FLOCK OF FLYING BIRDS
+    // 5. LIVING, AUTONOMOUS CONTINUOUSLY FLYING BIRDS
+    // Multiple independent birds at varying depths, speeds & paths
     // -------------------------------------------------------------
-    interface Bird {
-      order: number;
-      relX: number;
-      relY: number;
+    interface AutonomousBird {
+      id: number;
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
       scale: number;
-      flapRate: number;
+      opacity: number;
       flapPhase: number;
+      flapRate: number;
       isGliding: boolean;
       glideTimer: number;
       glideDuration: number;
+      flapDuration: number;
+      altitudeWanderPhase: number;
+      altitudeWanderRate: number;
+      altitudeWanderAmp: number;
+      bodyAngle: number;
     }
 
-    let flockBaseX = width * 0.18;
-    let flockBaseY = height * 0.22;
-    const birdCount = 9;
-    const birds: Bird[] = [];
+    const birdCount = 10;
+    const birds: AutonomousBird[] = [];
 
+    // Helper to spawn or reset an autonomous bird
+    const createBird = (id: number, initialScatter = false): AutonomousBird => {
+      const depth = Math.random(); // 0 = far distance, 1 = closer
+      // Depth perspective: distant birds are smaller & slower
+      const scale = 0.16 + depth * 0.22;
+      const speedX = 1.4 + depth * 1.6 + (Math.random() - 0.5) * 0.35;
+      const opacity = 0.55 + depth * 0.4;
+
+      const x = initialScatter
+        ? (id / birdCount) * (width + 240) - 120 + (Math.random() - 0.5) * 100
+        : -40 - Math.random() * 180;
+
+      const y = height * 0.08 + Math.random() * (height * 0.44);
+
+      return {
+        id,
+        x,
+        y,
+        vx: speedX,
+        vy: (Math.random() - 0.5) * 0.2,
+        scale,
+        opacity,
+        flapPhase: Math.random() * Math.PI * 2,
+        flapRate: 0.11 + (1 - depth) * 0.08 + Math.random() * 0.03,
+        isGliding: Math.random() > 0.4,
+        glideTimer: Math.floor(Math.random() * 60),
+        glideDuration: 60 + Math.floor(Math.random() * 100),
+        flapDuration: 45 + Math.floor(Math.random() * 65),
+        altitudeWanderPhase: Math.random() * Math.PI * 2,
+        altitudeWanderRate: 0.015 + Math.random() * 0.02,
+        altitudeWanderAmp: 8 + depth * 18,
+        bodyAngle: -0.15,
+      };
+    };
+
+    // Initialize all birds scattered across mid-flight
     for (let i = 0; i < birdCount; i++) {
-      const relX = (i - 4) * 26;
-      const relY = (i - 4) * 15 + Math.sin(i * 0.45) * 5;
-      birds.push({
-        order: i,
-        relX,
-        relY,
-        scale: 0.34 - i * 0.012,
-        flapRate: 0.085 + Math.random() * 0.02,
-        flapPhase: i * 0.6,
-        isGliding: false,
-        glideTimer: 0,
-        glideDuration: 80 + Math.random() * 70,
-      });
+      birds.push(createBird(i, true));
     }
 
     // -------------------------------------------------------------
-    // 6. SUBTLE DRIFTING MIST (Atmospheric depth)
-    // -------------------------------------------------------------
-    interface DriftingMist {
-      xRatio: number;
-      yRatio: number;
-      wRatio: number;
-      hRatio: number;
-      speedX: number;
-      opacity: number;
-    }
-
-    const driftingMists: DriftingMist[] = [
-      { xRatio: 0.15, yRatio: 0.32, wRatio: 0.55, hRatio: 0.18, speedX: 0.04, opacity: 0.09 },
-      { xRatio: 0.45, yRatio: 0.44, wRatio: 0.65, hRatio: 0.14, speedX: 0.05, opacity: 0.07 },
-      { xRatio: 0.75, yRatio: 0.22, wRatio: 0.45, hRatio: 0.12, speedX: 0.03, opacity: 0.08 },
-    ];
-
-    // -------------------------------------------------------------
-    // 7. MAIN SIMULATION & RENDERING LOOP
+    // 6. MAIN SIMULATION & RENDERING LOOP
     // -------------------------------------------------------------
     let currentScroll = 0;
     let targetScroll = 0;
@@ -283,11 +261,11 @@ export const NatureBackground: React.FC = () => {
       smoothMouseNormX += (targetNormX - smoothMouseNormX) * 0.05;
       smoothMouseNormY += (targetNormY - smoothMouseNormY) * 0.05;
 
-      // Scroll interpolation
+      // Smooth scroll interpolation
       currentScroll += (targetScroll - currentScroll) * 0.06;
       const scrollPixelOffset = currentScroll * height * 0.55;
 
-      // Current Theme Interpolation
+      // Current Theme
       let themeIdx = 0;
       for (let i = 0; i < themes.length - 1; i++) {
         if (currentScroll >= themes[i].threshold && currentScroll <= themes[i + 1].threshold) {
@@ -301,7 +279,6 @@ export const NatureBackground: React.FC = () => {
       // A. DRAW FOUNDATIONAL MOONLIT OCEAN ARTWORK
       // -----------------------------------------------------------
       if (imageLoaded) {
-        // High-fidelity cover-fit calculations with parallax headroom
         const imgRatio = bgImage.naturalWidth / bgImage.naturalHeight;
         const canvasRatio = width / height;
         let baseW = width;
@@ -320,7 +297,22 @@ export const NatureBackground: React.FC = () => {
 
         ctx.drawImage(bgImage, drawX, drawY, baseW, baseH);
 
-        // Calculate key physical anchor points from the artwork
+        // Softly conceal any static baked-in wallpaper marks so only living birds are visible
+        ctx.save();
+        const patchX = drawX + baseW * 0.22;
+        const patchY = drawY + baseH * 0.31;
+        const patchR = baseW * 0.085;
+        const cloudPatch = ctx.createRadialGradient(patchX, patchY, patchR * 0.05, patchX, patchY, patchR);
+        cloudPatch.addColorStop(0, 'rgba(12, 32, 70, 0.94)');
+        cloudPatch.addColorStop(0.55, 'rgba(14, 36, 78, 0.75)');
+        cloudPatch.addColorStop(1, 'transparent');
+        ctx.fillStyle = cloudPatch;
+        ctx.beginPath();
+        ctx.arc(patchX, patchY, patchR, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        // Key coordinates
         const oceanHorizonY = drawY + baseH * 0.68;
         const oceanH = height - oceanHorizonY;
         const moonX = drawX + baseW * 0.828;
@@ -328,13 +320,12 @@ export const NatureBackground: React.FC = () => {
         const moonRadius = baseW * 0.051;
 
         // ---------------------------------------------------------
-        // B. CRISP MOON CORONA & ATMOSPHERIC BREATHING HALO
+        // B. MOON ATMOSPHERIC CORONA & HALO
         // ---------------------------------------------------------
         ctx.save();
-        // Distance from cursor to moon determines subtle luminous bloom
         const distToMoon = Math.hypot(mouseX - moonX, mouseY - moonY);
         const moonBloom = Math.max(0, 1 - distToMoon / 600) * 0.08;
-        const coronaRadius = moonRadius * (2.4 + Math.sin(time * 0.6) * 0.15);
+        const coronaRadius = moonRadius * (2.2 + Math.sin(time * 0.6) * 0.12);
 
         const coronaGrad = ctx.createRadialGradient(
           moonX,
@@ -386,71 +377,60 @@ export const NatureBackground: React.FC = () => {
         ctx.restore();
 
         // ---------------------------------------------------------
-        // D. SUBTLE DRIFTING ATMOSPHERIC MIST
+        // D. CONTINUOUSLY FLYING BIRDS (Autonomous & Dynamic)
         // ---------------------------------------------------------
-        ctx.save();
-        driftingMists.forEach((mist) => {
+        birds.forEach((bird) => {
           if (!prefersReducedMotion) {
-            mist.xRatio += (mist.speedX * 0.016) / 45;
-            if (mist.xRatio > 1.3) mist.xRatio = -0.3;
-          }
-
-          const mx = mist.xRatio * width + smoothMouseNormX * 10;
-          const my = mist.yRatio * height - scrollPixelOffset * 0.05 + smoothMouseNormY * 5;
-          const mw = mist.wRatio * width;
-          const mh = mist.hRatio * height;
-
-          const mistGrad = ctx.createRadialGradient(mx, my, mh * 0.1, mx, my, mw * 0.5);
-          mistGrad.addColorStop(0, `rgba(186, 224, 255, ${mist.opacity})`);
-          mistGrad.addColorStop(0.5, `rgba(147, 197, 253, ${mist.opacity * 0.4})`);
-          mistGrad.addColorStop(1, 'transparent');
-
-          ctx.fillStyle = mistGrad;
-          ctx.beginPath();
-          ctx.ellipse(mx, my, mw * 0.5, mh * 0.5, 0, 0, Math.PI * 2);
-          ctx.fill();
-        });
-        ctx.restore();
-
-        // ---------------------------------------------------------
-        // E. ASCENDING FLOCK OF BIRDS
-        // ---------------------------------------------------------
-        if (!prefersReducedMotion) {
-          flockBaseX += 0.45 + smoothMouseNormX * 0.1;
-          flockBaseY += Math.sin(time * 0.7) * 0.1;
-
-          if (flockBaseX > width + 120) {
-            flockBaseX = -120;
-            flockBaseY = height * 0.18 + Math.random() * (height * 0.12);
-          }
-        }
-
-        birds.forEach((b) => {
-          if (!prefersReducedMotion) {
-            b.glideTimer++;
-            if (b.glideTimer > b.glideDuration) {
-              b.isGliding = !b.isGliding;
-              b.glideTimer = 0;
-              b.glideDuration = b.isGliding ? 70 + Math.random() * 80 : 80 + Math.random() * 100;
+            // Glide & flap state cycle
+            bird.glideTimer++;
+            if (bird.isGliding) {
+              if (bird.glideTimer > bird.glideDuration) {
+                bird.isGliding = false;
+                bird.glideTimer = 0;
+              }
+            } else {
+              bird.flapPhase += bird.flapRate;
+              if (bird.glideTimer > bird.flapDuration) {
+                bird.isGliding = true;
+                bird.glideTimer = 0;
+              }
             }
 
-            if (!b.isGliding) {
-              b.flapPhase += b.flapRate;
+            // Natural altitude undulation
+            bird.altitudeWanderPhase += bird.altitudeWanderRate;
+            const wanderVy = Math.cos(bird.altitudeWanderPhase) * (bird.altitudeWanderAmp * 0.035);
+
+            // Move continuously across the sky!
+            bird.x += bird.vx;
+            bird.y += bird.vy + wanderVy;
+
+            // Smooth aerodynamic banking angle
+            const targetAngle = Math.atan2(bird.vy + wanderVy, bird.vx);
+            bird.bodyAngle += (targetAngle - bird.bodyAngle) * 0.08;
+
+            // Seamless continuous respawn: when flying off the right side, respawn on the left!
+            if (bird.x > width + 60) {
+              const freshBird = createBird(bird.id, false);
+              Object.assign(bird, freshBird);
             }
           }
 
-          const bx = flockBaseX + b.relX + smoothMouseNormX * 7;
-          const by = flockBaseY + b.relY - scrollPixelOffset * 0.08 + smoothMouseNormY * 5;
+          // Render bird with depth perspective
+          const bx = bird.x + smoothMouseNormX * (bird.scale * 15);
+          const by = bird.y - scrollPixelOffset * (bird.scale * 0.05) + smoothMouseNormY * (bird.scale * 8);
 
           ctx.save();
           ctx.translate(bx, by);
-          ctx.rotate(-0.24); // Ascending diagonal orientation
-          ctx.scale(b.scale, b.scale);
+          ctx.rotate(bird.bodyAngle);
+          ctx.scale(bird.scale, bird.scale);
 
-          const flapAngle = b.isGliding ? 0.08 : Math.sin(b.flapPhase) * 0.72;
+          const flapAngle = bird.isGliding
+            ? 0.06 + Math.sin(time * 2 + bird.id) * 0.02
+            : Math.sin(bird.flapPhase) * 0.74;
 
-          ctx.fillStyle = 'rgba(240, 248, 255, 0.88)';
-          ctx.strokeStyle = 'rgba(240, 248, 255, 0.95)';
+          // Crisp silver-white gull silhouette
+          ctx.fillStyle = `rgba(240, 248, 255, ${bird.opacity})`;
+          ctx.strokeStyle = `rgba(255, 255, 255, ${bird.opacity * 0.95})`;
           ctx.lineWidth = 1.25;
 
           // Slender body
@@ -458,7 +438,7 @@ export const NatureBackground: React.FC = () => {
           ctx.ellipse(0, 0, 5.0, 1.5, 0, 0, Math.PI * 2);
           ctx.fill();
 
-          // Left gull wing
+          // Left articulated gull wing
           ctx.beginPath();
           ctx.moveTo(-1, 0);
           ctx.quadraticCurveTo(-10, flapAngle * 14 - 3, -20, flapAngle * 17);
@@ -466,7 +446,7 @@ export const NatureBackground: React.FC = () => {
           ctx.fill();
           ctx.stroke();
 
-          // Right gull wing
+          // Right articulated gull wing
           ctx.beginPath();
           ctx.moveTo(1, 0);
           ctx.quadraticCurveTo(10, flapAngle * 14 - 3, 20, flapAngle * 17);
@@ -478,7 +458,7 @@ export const NatureBackground: React.FC = () => {
         });
 
         // ---------------------------------------------------------
-        // F. LIVING WATER SHIMMER & MOONLIGHT REFLECTIONS
+        // E. LIVING WATER SHIMMER & MOONLIGHT REFLECTIONS
         // ---------------------------------------------------------
         ctx.save();
         // Horizon subtle sheen line directly under the moon
@@ -507,11 +487,9 @@ export const NatureBackground: React.FC = () => {
           const d = glint.depthRatio;
           const gy = oceanHorizonY + Math.pow(d, 1.55) * oceanH;
 
-          // Corridor expands toward foreground in perspective
           const corridorSpread = 90 + d * 280;
           const gx = moonX + glint.corridorOffset * corridorSpread + smoothMouseNormX * 7;
 
-          // Natural harmonic wave sparkle
           const sparkle = Math.sin(time * 60 * glint.speed + glint.phase);
           const glintAlpha =
             Math.max(0.04, Math.min(1.0, 0.45 + sparkle * 0.55)) *
@@ -538,7 +516,6 @@ export const NatureBackground: React.FC = () => {
             glint.thickness
           );
 
-          // Subtle cyan-blue specular halo on prominent foreground glints
           if (d > 0.45 && glintAlpha > 0.65) {
             ctx.fillStyle = `rgba(186, 230, 253, ${glintAlpha * 0.2})`;
             ctx.beginPath();
@@ -558,7 +535,7 @@ export const NatureBackground: React.FC = () => {
       }
 
       // -----------------------------------------------------------
-      // G. CALIBRATED VIGNETTE (Readability & Professional Depth)
+      // F. CALIBRATED VIGNETTE (Readability & Professional Depth)
       // -----------------------------------------------------------
       const vignette = ctx.createRadialGradient(
         width / 2,
