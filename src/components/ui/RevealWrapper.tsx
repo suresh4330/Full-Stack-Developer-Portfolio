@@ -1,7 +1,7 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { ScrollReveal } from './ScrollReveal';
 
-interface RevealWrapperProps {
+export interface RevealWrapperProps {
   children: React.ReactNode;
   direction?: 'up' | 'down' | 'left' | 'right' | 'zoom' | 'fade';
   delay?: number;
@@ -9,65 +9,48 @@ interface RevealWrapperProps {
   distance?: number;
   className?: string;
   viewportAmount?: number;
+  once?: boolean;
 }
 
+/**
+ * RevealWrapper — Clean, Smooth, Unified Scroll Reveal
+ * Powered directly by the upgraded ScrollReveal engine for 100% consistent physics and easing.
+ */
 export const RevealWrapper: React.FC<RevealWrapperProps> = ({
   children,
   direction = 'up',
   delay = 0,
-  duration = 0.6,
-  distance = 35,
+  duration = 0.55,
+  distance = 24,
   className = '',
-  viewportAmount = 0.15,
+  viewportAmount = 0.1,
+  once = false,
 }) => {
-  const getInitial = () => {
-    switch (direction) {
-      case 'up':
-        return { opacity: 0, y: distance };
-      case 'down':
-        return { opacity: 0, y: -distance };
-      case 'left':
-        return { opacity: 0, x: distance };
-      case 'right':
-        return { opacity: 0, x: -distance };
-      case 'zoom':
-        return { opacity: 0, scale: 0.92 };
-      case 'fade':
-      default:
-        return { opacity: 0 };
-    }
+  const variantMap: Record<string, 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'scale-up' | 'fade'> = {
+    up: 'slide-up',
+    down: 'slide-down',
+    left: 'slide-left',
+    right: 'slide-right',
+    zoom: 'scale-up',
+    fade: 'fade',
   };
 
-  const getTarget = () => {
-    switch (direction) {
-      case 'up':
-      case 'down':
-        return { opacity: 1, y: 0 };
-      case 'left':
-      case 'right':
-        return { opacity: 1, x: 0 };
-      case 'zoom':
-        return { opacity: 1, scale: 1 };
-      case 'fade':
-      default:
-        return { opacity: 1 };
-    }
-  };
+  const variant = variantMap[direction] || 'slide-up';
 
   return (
-    <motion.div
-      initial={getInitial()}
-      whileInView={getTarget()}
-      viewport={{ once: true, amount: viewportAmount }}
-      transition={{
-        duration,
-        delay,
-        ease: [0.16, 1, 0.3, 1], // Smooth cubic bezier
-      }}
+    <ScrollReveal
+      variant={variant}
+      startY={distance}
+      startX={distance}
+      duration={duration}
+      delay={delay}
+      viewportAmount={viewportAmount}
+      once={once}
       className={className}
     >
       {children}
-    </motion.div>
+    </ScrollReveal>
   );
 };
 
+export default RevealWrapper;

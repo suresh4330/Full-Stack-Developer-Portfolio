@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 
 interface SectionHeadingProps {
   pill: string;
@@ -16,6 +16,9 @@ export const SectionHeading: React.FC<SectionHeadingProps> = ({
   alignment = 'left',
   className = '',
 }) => {
+  const prefersReducedMotion = useReducedMotion();
+  const ease = [0.22, 1, 0.36, 1] as const;
+
   return (
     <div
       className={`mb-12 ${alignment === 'center' ? 'text-center max-w-2xl mx-auto' : 'max-w-3xl'} ${className}`}
@@ -23,11 +26,11 @@ export const SectionHeading: React.FC<SectionHeadingProps> = ({
       {/* Animated Pill Badge */}
       <motion.div
         className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-dark-900 border border-dark-750 text-xs font-mono text-brand-400 mb-3 shadow-sm select-none hover:border-brand-500/50 hover:shadow-md hover:shadow-brand-500/15 transition-all cursor-default"
-        initial={{ opacity: 0, y: -10 }}
+        initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : -8 }}
         whileInView={{ opacity: 1, y: 0 }}
-        whileHover={{ scale: 1.04, y: -1 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        whileHover={prefersReducedMotion ? {} : { scale: 1.04, y: -1 }}
+        viewport={{ amount: 0.2 }}
+        transition={{ duration: 0.45, ease }}
       >
         <span className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse" />
         <span>{pill}</span>
@@ -37,10 +40,10 @@ export const SectionHeading: React.FC<SectionHeadingProps> = ({
       <div className="overflow-hidden">
         <motion.h2
           className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white mb-3"
-          initial={{ opacity: 0, y: 25 }}
+          initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+          viewport={{ amount: 0.2 }}
+          transition={{ duration: 0.55, delay: 0.08, ease }}
         >
           {title}
         </motion.h2>
@@ -50,10 +53,10 @@ export const SectionHeading: React.FC<SectionHeadingProps> = ({
       {description && (
         <motion.p
           className="text-slate-400 text-sm sm:text-base leading-relaxed"
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 12 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.5, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          viewport={{ amount: 0.2 }}
+          transition={{ duration: 0.55, delay: 0.16, ease }}
         >
           {description}
         </motion.p>
@@ -61,3 +64,5 @@ export const SectionHeading: React.FC<SectionHeadingProps> = ({
     </div>
   );
 };
+
+export default SectionHeading;

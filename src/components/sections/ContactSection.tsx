@@ -5,8 +5,8 @@ import { profileData } from '../../data/profile';
 import { Mail, Phone, Github, Linkedin, Copy, Check, Send, ExternalLink, ShieldCheck } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { TiltCard } from '../ui/TiltCard';
-import { RevealWrapper } from '../ui/RevealWrapper';
 import { MagneticButton } from '../ui/MagneticButton';
+import { ScrollReveal } from '../ui/ScrollReveal';
 
 export const ContactSection: React.FC = () => {
   const [copiedEmail, setCopiedEmail] = useState(false);
@@ -33,143 +33,158 @@ export const ContactSection: React.FC = () => {
   return (
     <section id="contact" className="py-24 bg-dark-900/60 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <SectionHeading
-          pill="Get In Touch"
-          title="Direct Communication Channels"
-          description="Interested in discussing software architecture, full-stack development, or engineering opportunities? Reach out directly through verified channels."
-        />
+        <ScrollReveal variant="slide-up" startY={30} duration={0.6} delay={0.05}>
+          <SectionHeading
+            pill="Get In Touch"
+            title="Direct Communication Channels"
+            description="Interested in discussing software architecture, full-stack development, or engineering opportunities? Reach out directly through verified channels."
+          />
+        </ScrollReveal>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          {/* Left: Verified contact methods - Slides from Left */}
-          <RevealWrapper direction="right" duration={0.6} className="lg:col-span-5 space-y-4">
-            {/* Email Card */}
-            <motion.div 
-              className="bg-dark-900 border border-dark-750 rounded-3xl p-6 hover:border-dark-600 transition-colors shadow-xl"
-              whileHover={{ y: -3, scale: 1.01 }}
-            >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-mono text-brand-400 flex items-center gap-1.5">
-                  <Mail className="w-4 h-4" />
-                  <span>Primary Email</span>
-                </span>
-                <button
-                  onClick={handleCopyEmail}
-                  className="p-1.5 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-400 hover:text-white transition-colors flex items-center gap-1 text-xs font-mono"
-                  aria-label="Copy email"
-                  data-interactive="true"
-                >
-                  {copiedEmail ? (
-                    <>
-                      <Check className="w-3.5 h-3.5 text-emerald-400" />
-                      <span className="text-emerald-400 font-semibold">Copied</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-3.5 h-3.5" />
-                      <span>Copy</span>
-                    </>
-                  )}
-                </button>
-              </div>
-              <a
-                href={`mailto:${profileData.contact.email}`}
-                className="text-base sm:text-lg font-bold text-white hover:text-brand-400 transition-colors break-all"
-                data-interactive="true"
+          {/* Left Column: Direct Contact Cards */}
+          <div className="lg:col-span-5 space-y-4">
+            <ScrollReveal variant="slide-up" startY={25} duration={0.55} delay={0.1}>
+              <motion.div 
+                className="bg-dark-900 border border-dark-750 rounded-3xl p-6 hover:border-brand-500/40 transition-all duration-300 shadow-xl group"
+                whileHover={{ y: -3, scale: 1.01 }}
               >
-                {profileData.contact.email}
-              </a>
-              <p className="text-xs text-slate-400 mt-2">
-                Monitored daily for engineering inquiries and technical discussions.
-              </p>
-            </motion.div>
-
-            {/* Mobile / Direct Line */}
-            <motion.div 
-              className="bg-dark-900 border border-dark-750 rounded-3xl p-6 hover:border-dark-600 transition-colors shadow-xl"
-              whileHover={{ y: -3, scale: 1.01 }}
-            >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-mono text-sky-400 flex items-center gap-1.5">
-                  <Phone className="w-4 h-4" />
-                  <span>Direct Phone / WhatsApp</span>
-                </span>
-                <button
-                  onClick={handleCopyPhone}
-                  className="p-1.5 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-400 hover:text-white transition-colors flex items-center gap-1 text-xs font-mono"
-                  aria-label="Copy phone"
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-mono text-brand-400 flex items-center gap-1.5">
+                    <Mail className="w-4 h-4" />
+                    <span>Primary Email</span>
+                  </span>
+                  <motion.button
+                    onClick={handleCopyEmail}
+                    className="p-1.5 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-400 hover:text-white transition-colors flex items-center gap-1 text-xs font-mono border border-dark-750"
+                    aria-label="Copy email"
+                    data-interactive="true"
+                    whileHover={{ scale: 1.06 }}
+                    whileTap={{ scale: 0.94 }}
+                  >
+                    {copiedEmail ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-400" />
+                        <span className="text-emerald-400 font-semibold">Copied</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5" />
+                        <span>Copy</span>
+                      </>
+                    )}
+                  </motion.button>
+                </div>
+                <motion.a
+                  href={`mailto:${profileData.contact.email}`}
+                  className="text-base sm:text-lg font-bold text-white hover:text-brand-400 transition-colors break-all block"
                   data-interactive="true"
+                  whileHover={{ x: 2 }}
                 >
-                  {copiedPhone ? (
-                    <>
-                      <Check className="w-3.5 h-3.5 text-emerald-400" />
-                      <span className="text-emerald-400 font-semibold">Copied</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-3.5 h-3.5" />
-                      <span>Copy</span>
-                    </>
-                  )}
-                </button>
-              </div>
-              <a
-                href={`tel:${profileData.contact.mobile}`}
-                className="text-base sm:text-lg font-bold text-white hover:text-sky-400 transition-colors"
-                data-interactive="true"
+                  {profileData.contact.email}
+                </motion.a>
+                <p className="text-xs text-slate-400 mt-2">
+                  Monitored daily for engineering inquiries and technical discussions.
+                </p>
+              </motion.div>
+            </ScrollReveal>
+
+            <ScrollReveal variant="slide-up" startY={25} duration={0.55} delay={0.16}>
+              <motion.div 
+                className="bg-dark-900 border border-dark-750 rounded-3xl p-6 hover:border-sky-500/40 transition-all duration-300 shadow-xl group"
+                whileHover={{ y: -3, scale: 1.01 }}
               >
-                {profileData.contact.mobile}
-              </a>
-              <p className="text-xs text-slate-400 mt-2">
-                Indian Standard Time (IST) • Punjab & Andhra Pradesh.
-              </p>
-            </motion.div>
-
-            {/* Social Links Box */}
-            <div className="bg-dark-900 border border-dark-750 rounded-3xl p-6 shadow-xl">
-              <h4 className="text-xs font-mono text-slate-400 uppercase tracking-wider mb-4">
-                Professional Networks
-              </h4>
-              <div className="space-y-3">
-                <a
-                  href={profileData.contact.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between p-3.5 rounded-2xl bg-dark-850 hover:bg-dark-800 border border-dark-750 text-slate-200 transition-all group"
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-mono text-sky-400 flex items-center gap-1.5">
+                    <Phone className="w-4 h-4" />
+                    <span>Direct Phone / WhatsApp</span>
+                  </span>
+                  <motion.button
+                    onClick={handleCopyPhone}
+                    className="p-1.5 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-400 hover:text-white transition-colors flex items-center gap-1 text-xs font-mono border border-dark-750"
+                    aria-label="Copy phone"
+                    data-interactive="true"
+                    whileHover={{ scale: 1.06 }}
+                    whileTap={{ scale: 0.94 }}
+                  >
+                    {copiedPhone ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-400" />
+                        <span className="text-emerald-400 font-semibold">Copied</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5" />
+                        <span>Copy</span>
+                      </>
+                    )}
+                  </motion.button>
+                </div>
+                <motion.a
+                  href={`tel:${profileData.contact.mobile}`}
+                  className="text-base sm:text-lg font-bold text-white hover:text-sky-400 transition-colors block"
                   data-interactive="true"
+                  whileHover={{ x: 2 }}
                 >
-                  <div className="flex items-center gap-3">
-                    <Github className="w-4 h-4 text-brand-400 group-hover:scale-110 transition-transform" />
-                    <div>
-                      <div className="text-xs font-bold text-white">GitHub Profile</div>
-                      <div className="text-[11px] font-mono text-slate-400">github.com/suresh4330</div>
-                    </div>
-                  </div>
-                  <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-white transition-colors" />
-                </a>
+                  {profileData.contact.mobile}
+                </motion.a>
+                <p className="text-xs text-slate-400 mt-2">
+                  Indian Standard Time (IST) • Punjab & Andhra Pradesh.
+                </p>
+              </motion.div>
+            </ScrollReveal>
 
-                <a
-                  href={profileData.contact.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between p-3.5 rounded-2xl bg-dark-850 hover:bg-dark-800 border border-dark-750 text-slate-200 transition-all group"
-                  data-interactive="true"
-                >
-                  <div className="flex items-center gap-3">
-                    <Linkedin className="w-4 h-4 text-sky-400 group-hover:scale-110 transition-transform" />
-                    <div>
-                      <div className="text-xs font-bold text-white">LinkedIn Profile</div>
-                      <div className="text-[11px] font-mono text-slate-400">in/annamneedi-suresh-kumar</div>
+            <ScrollReveal variant="slide-up" startY={25} duration={0.55} delay={0.22}>
+              <div className="bg-dark-900 border border-dark-750 rounded-3xl p-6 shadow-xl">
+                <h4 className="text-xs font-mono text-slate-400 uppercase tracking-wider mb-4">
+                  Professional Networks
+                </h4>
+                <div className="space-y-3">
+                  <motion.a
+                    href={profileData.contact.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-3.5 rounded-2xl bg-dark-850 hover:bg-dark-800 border border-dark-750 text-slate-200 transition-all group"
+                    data-interactive="true"
+                    whileHover={{ scale: 1.02, x: 2 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Github className="w-4 h-4 text-brand-400 group-hover:scale-110 transition-transform" />
+                      <div>
+                        <div className="text-xs font-bold text-white">GitHub Profile</div>
+                        <div className="text-[11px] font-mono text-slate-400">github.com/suresh4330</div>
+                      </div>
                     </div>
-                  </div>
-                  <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-white transition-colors" />
-                </a>
+                    <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-white transition-colors" />
+                  </motion.a>
+
+                  <motion.a
+                    href={profileData.contact.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-3.5 rounded-2xl bg-dark-850 hover:bg-dark-800 border border-dark-750 text-slate-200 transition-all group"
+                    data-interactive="true"
+                    whileHover={{ scale: 1.02, x: 2 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Linkedin className="w-4 h-4 text-sky-400 group-hover:scale-110 transition-transform" />
+                      <div>
+                        <div className="text-xs font-bold text-white">LinkedIn Profile</div>
+                        <div className="text-[11px] font-mono text-slate-400">in/annamneedi-suresh-kumar</div>
+                      </div>
+                    </div>
+                    <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-white transition-colors" />
+                  </motion.a>
+                </div>
               </div>
-            </div>
-          </RevealWrapper>
+            </ScrollReveal>
+          </div>
 
-          {/* Right: Functional Direct Mailto Composer - Slides from Right with 3D Tilt */}
-          <RevealWrapper direction="left" duration={0.6} delay={0.15} className="lg:col-span-7">
+          {/* Right Column: Direct Email Dispatcher */}
+          <ScrollReveal variant="slide-up" startY={35} duration={0.65} delay={0.15} className="lg:col-span-7">
             <TiltCard
               className="bg-dark-900 border border-dark-750 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl"
               tiltIntensity={5}
@@ -267,10 +282,12 @@ export const ContactSection: React.FC = () => {
                 </div>
               </form>
             </TiltCard>
-          </RevealWrapper>
+          </ScrollReveal>
 
         </div>
       </div>
     </section>
   );
 };
+
+export default ContactSection;

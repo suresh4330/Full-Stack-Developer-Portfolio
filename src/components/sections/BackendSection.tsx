@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { SectionHeading } from '../ui/SectionHeading';
 import { Server, ShieldCheck, Database, KeyRound, Code2, Play, CheckCircle2, RotateCw, Copy, Check, Zap } from 'lucide-react';
 import { TiltCard } from '../ui/TiltCard';
-import { RevealWrapper } from '../ui/RevealWrapper';
+import { ScrollReveal } from '../ui/ScrollReveal';
 
 interface MockEndpoint {
   method: 'POST' | 'GET';
@@ -140,28 +140,30 @@ export const BackendSection: React.FC = () => {
   return (
     <section id="backend" className="py-24 bg-dark-900/40 border-b border-dark-800 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <SectionHeading
-          pill="Backend Engineering"
-          title="Scalable Server Architecture & Data Management"
-          description="Engineering stateless REST APIs, role-based authorization, and reliable data persistence across Node.js, Express, FastAPI, and structured databases."
-        />
+        <ScrollReveal variant="slide-up" startY={30} duration={0.6} delay={0.05}>
+          <SectionHeading
+            pill="Backend Engineering"
+            title="Scalable Server Architecture & Data Management"
+            description="Engineering stateless REST APIs, role-based authorization, and reliable data persistence across Node.js, Express, FastAPI, and structured databases."
+          />
+        </ScrollReveal>
 
         {/* 2-Column Showcase matching Frontend visual weight */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          {/* Left Column: Backend Engineering Pillars with Staggered Direction */}
+          {/* Left Column: Backend Engineering Pillars */}
           <div className="lg:col-span-6 space-y-4">
             
-            <RevealWrapper direction="right" delay={0.05}>
+            <ScrollReveal variant="slide-up" startY={25} duration={0.6} delay={0.1}>
               <motion.div 
-                className="p-5 rounded-2xl bg-dark-900 border border-dark-750 hover:border-brand-500/40 transition-all duration-300 shadow-lg"
+                className="p-5 rounded-2xl bg-dark-900 border border-dark-750 hover:border-brand-500/40 transition-all duration-300 shadow-lg group"
                 whileHover={{ y: -3, scale: 1.01 }}
               >
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 rounded-xl bg-brand-500/10 text-brand-400 border border-brand-500/20">
+                  <div className="p-2 rounded-xl bg-brand-500/10 text-brand-400 border border-brand-500/20 group-hover:scale-110 transition-transform">
                     <Server className="w-4 h-4" />
                   </div>
-                  <h3 className="text-base font-bold text-white">
+                  <h3 className="text-base font-bold text-white group-hover:text-brand-300 transition-colors">
                     Stateless RESTful API Architecture
                   </h3>
                 </div>
@@ -176,18 +178,18 @@ export const BackendSection: React.FC = () => {
                   ))}
                 </div>
               </motion.div>
-            </RevealWrapper>
+            </ScrollReveal>
 
-            <RevealWrapper direction="right" delay={0.15}>
+            <ScrollReveal variant="slide-up" startY={25} duration={0.6} delay={0.16}>
               <motion.div 
-                className="p-5 rounded-2xl bg-dark-900 border border-dark-750 hover:border-indigo-500/40 transition-all duration-300 shadow-lg"
+                className="p-5 rounded-2xl bg-dark-900 border border-dark-750 hover:border-indigo-500/40 transition-all duration-300 shadow-lg group"
                 whileHover={{ y: -3, scale: 1.01 }}
               >
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                  <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 group-hover:scale-110 transition-transform">
                     <KeyRound className="w-4 h-4" />
                   </div>
-                  <h3 className="text-base font-bold text-white">
+                  <h3 className="text-base font-bold text-white group-hover:text-indigo-300 transition-colors">
                     Authentication & Role-Based Access Control
                   </h3>
                 </div>
@@ -202,18 +204,18 @@ export const BackendSection: React.FC = () => {
                   ))}
                 </div>
               </motion.div>
-            </RevealWrapper>
+            </ScrollReveal>
 
-            <RevealWrapper direction="right" delay={0.25}>
+            <ScrollReveal variant="slide-up" startY={25} duration={0.6} delay={0.22}>
               <motion.div 
-                className="p-5 rounded-2xl bg-dark-900 border border-dark-750 hover:border-sky-500/40 transition-all duration-300 shadow-lg"
+                className="p-5 rounded-2xl bg-dark-900 border border-dark-750 hover:border-sky-500/40 transition-all duration-300 shadow-lg group"
                 whileHover={{ y: -3, scale: 1.01 }}
               >
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 rounded-xl bg-sky-500/10 text-sky-400 border border-sky-500/20">
+                  <div className="p-2 rounded-xl bg-sky-500/10 text-sky-400 border border-sky-500/20 group-hover:scale-110 transition-transform">
                     <Database className="w-4 h-4" />
                   </div>
-                  <h3 className="text-base font-bold text-white">
+                  <h3 className="text-base font-bold text-white group-hover:text-sky-300 transition-colors">
                     Relational & Document Database Persistence
                   </h3>
                 </div>
@@ -228,12 +230,12 @@ export const BackendSection: React.FC = () => {
                   ))}
                 </div>
               </motion.div>
-            </RevealWrapper>
+            </ScrollReveal>
 
           </div>
 
-          {/* Right Column: Interactive API Endpoint Simulator with 3D Tilt */}
-          <RevealWrapper direction="left" delay={0.15} className="lg:col-span-6">
+          {/* Right Column: Interactive API Endpoint Simulator */}
+          <ScrollReveal variant="slide-up" startY={35} duration={0.7} delay={0.15} className="lg:col-span-6">
             <TiltCard
               className="bg-dark-900 border border-dark-750 rounded-3xl p-6 shadow-2xl backdrop-blur-xl"
               tiltIntensity={6}
@@ -355,7 +357,7 @@ export const BackendSection: React.FC = () => {
                 </div>
               </div>
 
-              {/* Active Endpoint Spec Box with Syntax Highlighted View */}
+              {/* Active Endpoint Spec Box */}
               <div className="bg-dark-950 rounded-2xl border border-dark-800 overflow-hidden mb-4 shadow-inner">
                 <div className="px-3.5 py-2 bg-dark-850/90 border-b border-dark-800 flex items-center justify-between text-xs font-mono">
                   <div className="flex items-center gap-2">
@@ -381,7 +383,6 @@ export const BackendSection: React.FC = () => {
                   </button>
                 </div>
 
-                {/* Formatted JSON Preview */}
                 <div className="p-3.5 overflow-x-auto max-h-[190px] select-text">
                   <AnimatePresence mode="wait">
                     {isSimulating ? (
@@ -424,7 +425,7 @@ export const BackendSection: React.FC = () => {
                 <span className="text-[10px] font-mono text-brand-400 shrink-0">Validated</span>
               </div>
             </TiltCard>
-          </RevealWrapper>
+          </ScrollReveal>
 
         </div>
       </div>

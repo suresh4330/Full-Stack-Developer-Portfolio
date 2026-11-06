@@ -71,7 +71,7 @@ const DEFAULT_CONFIG: AnimationConfig = {
     moonGlow: 1.0,
     reflectionBrightness: 1.0,
     starDensity: 1.0,
-    vignetteStrength: 0.6,
+    vignetteStrength: 0.45,
   },
   performance: {
     mode: 'cinematic',
@@ -253,3 +253,4 @@ export const useAnimationConfig = () => {
   }
   return context;
 };
+

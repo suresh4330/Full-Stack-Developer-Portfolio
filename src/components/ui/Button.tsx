@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
@@ -22,8 +22,10 @@ export const Button: React.FC<ButtonProps> = ({
   className = '',
   ...props
 }) => {
+  const prefersReducedMotion = useReducedMotion();
+
   const baseClasses =
-    'inline-flex items-center justify-center font-medium transition-all duration-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden select-none active:scale-[0.96]';
+    'inline-flex items-center justify-center font-medium transition-colors duration-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden select-none cursor-pointer';
 
   const sizeClasses = {
     sm: 'text-xs px-3.5 py-1.5 gap-1.5',
@@ -33,16 +35,24 @@ export const Button: React.FC<ButtonProps> = ({
 
   const variantClasses = {
     primary:
-      'bg-brand-500 hover:bg-brand-400 text-dark-950 font-bold shadow-lg shadow-brand-500/20 hover:shadow-xl hover:shadow-brand-500/35 border border-brand-400/30 hover:border-brand-300 transition-colors',
+      'bg-brand-500 hover:bg-brand-400 text-dark-950 font-bold shadow-lg shadow-brand-500/20 hover:shadow-xl hover:shadow-brand-500/35 border border-brand-400/30 hover:border-brand-300',
     secondary:
-      'bg-dark-900 hover:bg-dark-850 text-slate-100 border border-dark-750 hover:border-sky-500/50 shadow-md shadow-black/40 hover:shadow-xl hover:shadow-sky-500/15 transition-all',
+      'bg-dark-900 hover:bg-dark-850 text-slate-100 border border-dark-750 hover:border-sky-500/50 shadow-md shadow-black/40 hover:shadow-xl hover:shadow-sky-500/15',
     outline:
-      'bg-transparent hover:bg-dark-900/90 text-slate-300 hover:text-white border border-dark-750 hover:border-brand-500/60 shadow-sm hover:shadow-lg hover:shadow-brand-500/15 transition-all',
+      'bg-transparent hover:bg-dark-900/90 text-slate-300 hover:text-white border border-dark-750 hover:border-brand-500/60 shadow-sm hover:shadow-lg hover:shadow-brand-500/15',
     ghost:
-      'bg-transparent hover:bg-dark-850/80 text-slate-400 hover:text-slate-100 hover:shadow-sm transition-colors',
+      'bg-transparent hover:bg-dark-850/80 text-slate-400 hover:text-slate-100 hover:shadow-sm',
   };
 
   const combinedClasses = `${baseClasses} ${sizeClasses[size]} ${variantClasses[variant]} ${className}`;
+
+  const motionProps = prefersReducedMotion
+    ? {}
+    : {
+        whileHover: { scale: 1.025, y: -2 },
+        whileTap: { scale: 0.96, y: 0 },
+        transition: { type: 'spring' as const, stiffness: 420, damping: 24, mass: 0.4 },
+      };
 
   if (href) {
     return (
@@ -52,17 +62,17 @@ export const Button: React.FC<ButtonProps> = ({
         rel={external ? 'noopener noreferrer' : undefined}
         download={download}
         className={combinedClasses}
-        whileHover={{ scale: 1.025, y: -1 }}
-        whileTap={{ scale: 0.95, y: 0 }}
-        transition={{ type: 'spring', stiffness: 450, damping: 22 }}
         data-interactive="true"
+        {...motionProps}
       >
         {icon && (
-          <span className="transition-transform group-hover:scale-115 group-hover:-translate-y-0.5 duration-200">
+          <span className="transition-transform group-hover:scale-110 group-hover:-translate-y-0.5 duration-200">
             {icon}
           </span>
         )}
         <span>{children}</span>
+        {/* Subtle shine glint overlay */}
+        <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
       </motion.a>
     );
   }
@@ -70,18 +80,20 @@ export const Button: React.FC<ButtonProps> = ({
   return (
     <motion.button
       className={combinedClasses}
-      whileHover={{ scale: 1.025, y: -1 }}
-      whileTap={{ scale: 0.95, y: 0 }}
-      transition={{ type: 'spring', stiffness: 450, damping: 22 }}
       data-interactive="true"
+      {...motionProps}
       {...(props as any)}
     >
       {icon && (
-        <span className="transition-transform group-hover:scale-115 group-hover:-translate-y-0.5 duration-200">
+        <span className="transition-transform group-hover:scale-110 group-hover:-translate-y-0.5 duration-200">
           {icon}
         </span>
       )}
       <span>{children}</span>
+      {/* Subtle shine glint overlay */}
+      <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
     </motion.button>
   );
 };
+
+export default Button;

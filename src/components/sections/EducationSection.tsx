@@ -3,26 +3,33 @@ import { SectionHeading } from '../ui/SectionHeading';
 import { educationData } from '../../data/education';
 import { GraduationCap, MapPin } from 'lucide-react';
 import { TiltCard } from '../ui/TiltCard';
-import { RevealWrapper } from '../ui/RevealWrapper';
+import { ScrollReveal } from '../ui/ScrollReveal';
 
 export const EducationSection: React.FC = () => {
   return (
     <section id="education" className="py-24 bg-dark-900/30 border-b border-dark-800 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <SectionHeading
-          pill="Academic Foundations"
-          title="Education & Formal Training"
-          description="Academic records and institutional coursework in Computer Science, Artificial Intelligence, and quantitative STEM foundations."
-        />
+        <ScrollReveal variant="slide-up" startY={30} duration={0.6} delay={0.05}>
+          <SectionHeading
+            pill="Academic Foundations"
+            title="Education & Formal Training"
+            description="Academic records and institutional coursework in Computer Science, Artificial Intelligence, and quantitative STEM foundations."
+          />
+        </ScrollReveal>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {educationData.map((edu, idx) => {
-            // Direction variation for each card
-            const dir: 'right' | 'up' | 'left' = idx === 0 ? 'right' : idx === 1 ? 'up' : 'left';
             const glowColor: 'brand' | 'sky' | 'indigo' = idx === 0 ? 'brand' : idx === 1 ? 'sky' : 'indigo';
 
             return (
-              <RevealWrapper key={idx} direction={dir} delay={idx * 0.1} className="flex">
+              <ScrollReveal
+                key={idx}
+                variant="slide-up"
+                startY={28}
+                duration={0.55}
+                delay={idx * 0.08}
+                className="flex"
+              >
                 <TiltCard
                   className="w-full bg-dark-900/90 border border-dark-750 hover:border-dark-600 rounded-3xl p-6 transition-all duration-300 flex flex-col justify-between shadow-xl backdrop-blur-xl group"
                   tiltIntensity={6}
@@ -34,7 +41,7 @@ export const EducationSection: React.FC = () => {
                       <div className="p-2.5 rounded-2xl bg-dark-850 border border-dark-700 text-brand-400 group-hover:scale-110 transition-transform">
                         <GraduationCap className="w-5 h-5" />
                       </div>
-                      <span className="text-xs font-mono px-3 py-1 rounded-xl bg-dark-850 text-brand-400 border border-dark-700 font-bold">
+                      <span className="text-xs font-mono px-3 py-1 rounded-xl bg-dark-850 text-brand-400 border border-dark-700 font-bold shadow-sm">
                         {edu.score}
                       </span>
                     </div>
@@ -69,7 +76,7 @@ export const EducationSection: React.FC = () => {
                     </ul>
                   </div>
                 </TiltCard>
-              </RevealWrapper>
+              </ScrollReveal>
             );
           })}
         </div>
@@ -77,3 +84,5 @@ export const EducationSection: React.FC = () => {
     </section>
   );
 };
+
+export default EducationSection;

@@ -4,6 +4,7 @@ import { SectionHeading } from '../ui/SectionHeading';
 import { workflowSteps } from '../../data/workflow';
 import { Compass, Layout, Code2, Server, Database, CheckCircle2 } from 'lucide-react';
 import { TiltCard } from '../ui/TiltCard';
+import { ScrollReveal } from '../ui/ScrollReveal';
 
 const stepIcons: Record<string, React.ReactNode> = {
   Compass: <Compass className="w-5 h-5 text-sky-400" />,
@@ -21,50 +22,54 @@ export const WorkflowSection: React.FC = () => {
   return (
     <section id="workflow" className="py-24 bg-dark-950/40 backdrop-blur-[2px] border-b border-dark-800/80 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <SectionHeading
-          pill="Engineering Process"
-          title="How I Build Software"
-          description="A disciplined, step-by-step full-stack engineering workflow from requirements analysis and interface design to API implementation and testing."
-        />
+        <ScrollReveal variant="slide-up" startY={30} duration={0.6} delay={0.05}>
+          <SectionHeading
+            pill="Engineering Process"
+            title="How I Build Software"
+            description="A disciplined, step-by-step full-stack engineering workflow from requirements analysis and interface design to API implementation and testing."
+          />
+        </ScrollReveal>
 
-        {/* Step Navigation Pills with Staggered Entrance */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 mb-10">
-          {workflowSteps.map((step, idx) => {
-            const isSelected = activeStepIndex === idx;
-            return (
-              <motion.button
-                key={step.step}
-                onClick={() => setActiveStepIndex(idx)}
-                className={`p-3.5 rounded-2xl text-left transition-all duration-200 border flex flex-col justify-between ${
-                  isSelected
-                    ? 'bg-dark-900 border-brand-500/50 shadow-xl shadow-brand-500/10'
-                    : 'bg-dark-900/60 border-dark-800 hover:border-dark-700 text-slate-400'
-                }`}
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.35, delay: idx * 0.05 }}
-                whileHover={{ y: -3, scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                data-interactive="true"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded bg-dark-850 text-brand-400">
-                    Step {step.step}
-                  </span>
-                  <div className="p-1 rounded bg-dark-850">
-                    {stepIcons[step.icon]}
+        {/* Step Navigation Pills */}
+        <ScrollReveal variant="fade" duration={0.5} delay={0.12} className="w-full">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 mb-10">
+            {workflowSteps.map((step, idx) => {
+              const isSelected = activeStepIndex === idx;
+              return (
+                <motion.button
+                  key={step.step}
+                  onClick={() => setActiveStepIndex(idx)}
+                  className={`p-3.5 rounded-2xl text-left transition-all duration-200 border flex flex-col justify-between ${
+                    isSelected
+                      ? 'bg-dark-900 border-brand-500/50 shadow-xl shadow-brand-500/10'
+                      : 'bg-dark-900/60 border-dark-800 hover:border-dark-700 text-slate-400'
+                  }`}
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ amount: 0.2 }}
+                  transition={{ duration: 0.35, delay: idx * 0.05 }}
+                  whileHover={{ y: -3, scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  data-interactive="true"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded bg-dark-850 text-brand-400">
+                      Step {step.step}
+                    </span>
+                    <div className="p-1 rounded bg-dark-850">
+                      {stepIcons[step.icon]}
+                    </div>
                   </div>
-                </div>
-                <div className={`text-xs font-bold leading-tight ${isSelected ? 'text-white' : 'text-slate-300'}`}>
-                  {step.title}
-                </div>
-              </motion.button>
-            );
-          })}
-        </div>
+                  <div className={`text-xs font-bold leading-tight ${isSelected ? 'text-white' : 'text-slate-300'}`}>
+                    {step.title}
+                  </div>
+                </motion.button>
+              );
+            })}
+          </div>
+        </ScrollReveal>
 
-        {/* Active Step Detailed Card with 3D Tilt and AnimatePresence */}
+        {/* Active Step Detailed Card */}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeStep.step}
@@ -81,7 +86,6 @@ export const WorkflowSection: React.FC = () => {
             >
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                 
-                {/* Left: Overview */}
                 <div className="lg:col-span-7 space-y-4">
                   <div className="flex items-center gap-3 pb-3 border-b border-dark-800">
                     <div className="p-2.5 rounded-xl bg-dark-850 border border-dark-750">
@@ -102,7 +106,6 @@ export const WorkflowSection: React.FC = () => {
                   </p>
                 </div>
 
-                {/* Right: Deliverables */}
                 <div className="lg:col-span-5 bg-dark-950 p-5 rounded-2xl border border-dark-800">
                   <h4 className="text-xs font-mono uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
                     <CheckCircle2 className="w-3.5 h-3.5 text-brand-400" />

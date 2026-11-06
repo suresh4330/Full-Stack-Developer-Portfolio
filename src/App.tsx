@@ -22,9 +22,11 @@ import { EducationSection } from './components/sections/EducationSection';
 import { CertificationsSection } from './components/sections/CertificationsSection';
 import { ContactSection } from './components/sections/ContactSection';
 import { Footer } from './components/layout/Footer';
+import { PageLoadSequence } from './components/ui/PageLoadSequence';
 
 export function App() {
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   // Global Ctrl+K / Cmd+K listener
   useEffect(() => {
@@ -39,11 +41,15 @@ export function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  const handlePreloadComplete = () => {
+    setIsLoaded(true);
+  };
+
   return (
     <AnimationProvider>
       <div className="min-h-screen bg-[#04060a] text-slate-100 flex flex-col font-sans selection:bg-brand-500/25 selection:text-brand-300 relative overflow-x-hidden">
-        {/* 2025-2026 Interactive Preloader */}
-        <Preloader onComplete={() => {}} />
+        {/* Fast, cinematic preloader */}
+        <Preloader onComplete={handlePreloadComplete} />
 
         {/* Modern Fluid Custom Cursor (Desktop Only) */}
         <CustomCursor />
@@ -54,7 +60,7 @@ export function App() {
         {/* Dynamic Scroll Progress Bar */}
         <ScrollProgressBar />
 
-        {/* Ambient Animated Gradient Background & Grid */}
+        {/* Ambient Animated Gradient Background & Sky */}
         <AnimatedBackground />
 
         {/* Floating Animation & Atmosphere Control System */}
@@ -66,28 +72,31 @@ export function App() {
           onClose={() => setIsCommandPaletteOpen(false)}
         />
 
-        {/* Navigation Header */}
-        <Navbar onOpenCommandPalette={() => setIsCommandPaletteOpen(true)} />
+        {/* Page Load Sequence Wrapper */}
+        <PageLoadSequence>
+          {/* Navigation Header */}
+          <Navbar onOpenCommandPalette={() => setIsCommandPaletteOpen(true)} isPageLoaded={isLoaded} />
 
-        {/* Main Content Sections with Scroll Transitions */}
-        <main className="flex-1 relative z-10">
-          <HeroSection />
-          <HorizontalMarquee />
-          <AboutSection />
-          <FrontendSection />
-          <BackendSection />
-          <ArchitectureSection />
-          <ProjectsSection />
-          <WorkflowSection />
-          <SkillsSection />
-          <ExperienceSection />
-          <EducationSection />
-          <CertificationsSection />
-          <ContactSection />
-        </main>
+          {/* Main Content Sections with Scroll Transitions */}
+          <main className="flex-1 relative z-10">
+            <HeroSection isPageLoaded={isLoaded} />
+            <HorizontalMarquee />
+            <AboutSection />
+            <FrontendSection />
+            <BackendSection />
+            <ArchitectureSection />
+            <ProjectsSection />
+            <WorkflowSection />
+            <SkillsSection />
+            <ExperienceSection />
+            <EducationSection />
+            <CertificationsSection />
+            <ContactSection />
+          </main>
 
-        {/* Footer */}
-        <Footer />
+          {/* Footer */}
+          <Footer />
+        </PageLoadSequence>
       </div>
     </AnimationProvider>
   );

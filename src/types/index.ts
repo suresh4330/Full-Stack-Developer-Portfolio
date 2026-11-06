@@ -1,10 +1,21 @@
+export type ProjectCategory =
+  | 'Full Stack'
+  | 'Frontend'
+  | 'Backend'
+  | 'AI / Machine Learning'
+  | 'Deep Learning'
+  | 'Generative AI'
+  | 'DevOps'
+  | 'Algorithms';
+
 export interface Project {
   id: string;
   title: string;
   subtitle: string;
   role: string;
   date: string;
-  category: 'Full Stack' | 'Frontend' | 'Backend' | 'Algorithms';
+  category: ProjectCategory;
+  tags?: string[];
   featured: boolean;
   problemStatement: string;
   solution: string;

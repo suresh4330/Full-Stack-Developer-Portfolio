@@ -475,3 +475,4 @@ export const AnimationControlPanel: React.FC = () => {
     </>
   );
 };
+

@@ -134,7 +134,7 @@ export const NatureBackground: React.FC = () => {
           yRatio,
           size,
           baseAlpha: 0.35 + Math.random() * 0.55,
-          twinkleSpeed: 0.02 + Math.random() * 0.04,
+          twinkleSpeed: 0.015 + Math.random() * 0.03,
           twinklePhase: Math.random() * Math.PI * 2,
           hasSpike,
         });
@@ -164,9 +164,9 @@ export const NatureBackground: React.FC = () => {
         const corridorOffset = (Math.random() - 0.5) * (Math.random() < 0.65 ? 0.6 : 1.0);
         const length = (10 + depthRatio * 34) * (0.6 + Math.random() * 0.8);
         const thickness = 0.8 + depthRatio * 1.8;
-        const speed = 0.03 + Math.random() * 0.05;
+        const speed = 0.025 + Math.random() * 0.04;
         const phase = Math.random() * Math.PI * 2;
-        const alpha = 0.35 + Math.random() * 0.65;
+        const alpha = 0.3 + Math.random() * 0.5;
 
         shimmerGlints.push({
           depthRatio,
@@ -204,14 +204,14 @@ export const NatureBackground: React.FC = () => {
       bodyAngle: number;
     }
 
-    const maxBirds = 18;
+    const maxBirds = 12;
     const birds: AutonomousBird[] = [];
 
     const createBird = (id: number, initialScatter = false): AutonomousBird => {
       const depth = Math.random();
-      const scale = 0.16 + depth * 0.22;
-      const speedX = 1.4 + depth * 1.6 + (Math.random() - 0.5) * 0.35;
-      const opacity = 0.55 + depth * 0.4;
+      const scale = 0.14 + depth * 0.18;
+      const speedX = 0.9 + depth * 1.2 + (Math.random() - 0.5) * 0.25;
+      const opacity = 0.45 + depth * 0.3;
 
       const x = initialScatter
         ? (id / maxBirds) * (width + 240) - 120 + (Math.random() - 0.5) * 100
@@ -228,7 +228,7 @@ export const NatureBackground: React.FC = () => {
         scale,
         opacity,
         flapPhase: Math.random() * Math.PI * 2,
-        flapRate: 0.11 + (1 - depth) * 0.08 + Math.random() * 0.03,
+        flapRate: 0.08 + (1 - depth) * 0.06 + Math.random() * 0.02,
         isGliding: Math.random() > 0.4,
         glideTimer: Math.floor(Math.random() * 60),
         glideDuration: 60 + Math.floor(Math.random() * 100),

@@ -4,6 +4,7 @@ import { SectionHeading } from '../ui/SectionHeading';
 import { skillsCategories } from '../../data/skills';
 import { Layout, Server, Code, Database, Wrench, Cpu } from 'lucide-react';
 import { TiltCard } from '../ui/TiltCard';
+import { ScrollReveal } from '../ui/ScrollReveal';
 
 const categoryIcons: Record<string, React.ReactNode> = {
   'Frontend Development': <Layout className="w-4 h-4 text-sky-400" />,
@@ -27,43 +28,42 @@ export const SkillsSection: React.FC = () => {
   return (
     <section id="skills" className="py-24 bg-dark-900/40 border-b border-dark-800 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-60px' }}
-          transition={{ duration: 0.5 }}
-        >
+        <ScrollReveal variant="slide-up" startY={30} duration={0.6} delay={0.05}>
           <SectionHeading
             pill="Technical Capabilities"
             title="Skills & Technologies"
             description="Verified technologies and engineering principles supported by my actual CV and production code repositories. Organized in an interactive Bento Grid."
           />
-        </motion.div>
+        </ScrollReveal>
 
         {/* Category Pills */}
-        <div className="flex flex-wrap items-center gap-2 mb-10 overflow-x-auto pb-2 scrollbar-none">
-          {categories.map((cat) => (
-            <motion.button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              whileHover={{ y: -1.5, scale: 1.02 }}
-              whileTap={{ scale: 0.94 }}
-              className={`px-4 py-2 rounded-xl text-xs font-mono transition-all duration-200 border ${
-                activeCategory === cat
-                  ? 'bg-brand-500/15 text-brand-400 border-brand-500/50 font-bold shadow-lg shadow-brand-500/15'
-                  : 'bg-dark-900 text-slate-400 border-dark-800 hover:border-dark-700 hover:text-white'
-              }`}
-              data-interactive="true"
-            >
-              {cat}
-            </motion.button>
-          ))}
-        </div>
+        <ScrollReveal variant="fade" duration={0.5} delay={0.12} className="w-full">
+          <div className="flex flex-wrap items-center gap-2 mb-10 overflow-x-auto pb-2 scrollbar-none">
+            {categories.map((cat, idx) => (
+              <motion.button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                whileHover={{ y: -2, scale: 1.03 }}
+                whileTap={{ scale: 0.94 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.03, duration: 0.3 }}
+                className={`px-4 py-2 rounded-xl text-xs font-mono transition-all duration-200 border cursor-pointer ${
+                  activeCategory === cat
+                    ? 'bg-brand-500/15 text-brand-400 border-brand-500/50 font-bold shadow-lg shadow-brand-500/15'
+                    : 'bg-dark-900 text-slate-400 border-dark-800 hover:border-dark-700 hover:text-white'
+                }`}
+                data-interactive="true"
+              >
+                {cat}
+              </motion.button>
+            ))}
+          </div>
+        </ScrollReveal>
 
         {/* Bento Grid of Skill Categories */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6">
           {displayedCategories.map((category, idx) => {
-            // Frontend and Backend get wide 6-col spans; other categories take 6 or 4 cols
             const isWide = (category.title === 'Frontend Development' || category.title === 'Backend Development') && activeCategory === 'All';
             const colSpan = isWide ? 'lg:col-span-6' : 'lg:col-span-6';
 
@@ -77,13 +77,13 @@ export const SkillsSection: React.FC = () => {
                 : 'brand';
 
             return (
-              <motion.div
+              <ScrollReveal
+                variant="slide-up"
+                startY={28}
+                duration={0.55}
+                delay={idx * 0.05}
                 key={category.title}
                 className={`${colSpan} flex`}
-                initial={{ opacity: 0, y: 25 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-40px' }}
-                transition={{ duration: 0.4, delay: idx * 0.05 }}
               >
                 <TiltCard
                   className="w-full bg-dark-900/85 border border-dark-750 hover:border-dark-600 rounded-3xl p-6 shadow-xl flex flex-col justify-between transition-colors backdrop-blur-xl"
@@ -108,10 +108,16 @@ export const SkillsSection: React.FC = () => {
                     </p>
 
                     <div className="space-y-2.5">
-                      {category.skills.map((skill) => (
-                        <div
+                      {category.skills.map((skill, sIdx) => (
+                        <motion.div
                           key={skill.name}
-                          className="p-3 rounded-xl bg-dark-950/70 border border-dark-800/80 hover:border-dark-700 transition-colors"
+                          initial={{ opacity: 0, y: 8 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ amount: 0.1 }}
+                          transition={{ duration: 0.3, delay: sIdx * 0.04 }}
+                          whileHover={{ scale: 1.015, x: 2 }}
+                          whileTap={{ scale: 0.98 }}
+                          className="p-3 rounded-xl bg-dark-950/70 border border-dark-800/80 hover:border-dark-700 hover:bg-dark-950 transition-all cursor-default"
                         >
                           <div className="text-xs font-bold text-slate-200 mb-0.5">
                             {skill.name}
@@ -119,12 +125,12 @@ export const SkillsSection: React.FC = () => {
                           <div className="text-[11px] text-slate-400 leading-snug">
                             {skill.description}
                           </div>
-                        </div>
+                        </motion.div>
                       ))}
                     </div>
                   </div>
                 </TiltCard>
-              </motion.div>
+              </ScrollReveal>
             );
           })}
         </div>

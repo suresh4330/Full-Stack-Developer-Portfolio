@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SectionHeading } from '../ui/SectionHeading';
 import { Layout, ArrowRight, Server, Database, Globe, CheckCircle2 } from 'lucide-react';
+import { ScrollReveal } from '../ui/ScrollReveal';
 
 interface LayerInfo {
   id: string;
@@ -74,77 +75,80 @@ export const ArchitectureSection: React.FC = () => {
   return (
     <section id="architecture" className="py-24 bg-dark-950/40 backdrop-blur-[2px] border-b border-dark-800/80 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <SectionHeading
-          pill="Full Stack Architecture"
-          title="Interactive Application Flow"
-          description="How data flows through a clean, decoupled full-stack architecture—from user interactions in the client down to persistent database storage."
-        />
+        <ScrollReveal variant="slide-up" startY={30} duration={0.6} delay={0.05}>
+          <SectionHeading
+            pill="Full Stack Architecture"
+            title="Interactive Application Flow"
+            description="How data flows through a clean, decoupled full-stack architecture—from user interactions in the client down to persistent database storage."
+          />
+        </ScrollReveal>
 
-        {/* Interactive 4-Node Architecture Diagram with Staggered Entrance */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {layers.map((layer, idx) => {
-            const isSelected = selectedLayer.id === layer.id;
-            return (
-              <motion.div
-                key={layer.id}
-                onClick={() => setSelectedLayer(layer)}
-                className={`cursor-pointer p-5 rounded-3xl border transition-all duration-300 relative group flex flex-col justify-between ${
-                  isSelected
-                    ? 'bg-dark-900 border-brand-500/50 shadow-xl shadow-brand-500/10'
-                    : 'bg-dark-900/60 border-dark-750 hover:border-dark-600 hover:bg-dark-900'
-                }`}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.15 }}
-                transition={{ duration: 0.4, delay: idx * 0.08 }}
-                whileHover={{ y: -4, scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                data-interactive="true"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="p-2.5 rounded-xl bg-dark-850 border border-dark-750 group-hover:scale-110 transition-transform">
-                      {layer.icon}
+        {/* Interactive 4-Node Architecture Diagram */}
+        <ScrollReveal variant="fade" duration={0.6} delay={0.12} className="w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            {layers.map((layer, idx) => {
+              const isSelected = selectedLayer.id === layer.id;
+              return (
+                <motion.div
+                  key={layer.id}
+                  onClick={() => setSelectedLayer(layer)}
+                  className={`cursor-pointer p-5 rounded-3xl border transition-all duration-300 relative group flex flex-col justify-between ${
+                    isSelected
+                      ? 'bg-dark-900 border-brand-500/50 shadow-xl shadow-brand-500/10'
+                      : 'bg-dark-900/60 border-dark-750 hover:border-dark-600 hover:bg-dark-900'
+                  }`}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ amount: 0.15 }}
+                  transition={{ duration: 0.45, delay: idx * 0.06 }}
+                  whileHover={{ y: -4, scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  data-interactive="true"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="p-2.5 rounded-xl bg-dark-850 border border-dark-750 group-hover:scale-110 transition-transform">
+                        {layer.icon}
+                      </div>
+                      <span className="text-[11px] font-mono text-slate-400">
+                        0{idx + 1}
+                      </span>
                     </div>
-                    <span className="text-[11px] font-mono text-slate-400">
-                      0{idx + 1}
-                    </span>
+
+                    <h3 className="text-sm sm:text-base font-bold text-white mb-1">
+                      {layer.name}
+                    </h3>
+                    <p className="text-[11px] font-mono text-brand-400 mb-3">
+                      {layer.subtitle}
+                    </p>
                   </div>
 
-                  <h3 className="text-sm sm:text-base font-bold text-white mb-1">
-                    {layer.name}
-                  </h3>
-                  <p className="text-[11px] font-mono text-brand-400 mb-3">
-                    {layer.subtitle}
-                  </p>
-                </div>
+                  <div className="pt-3 border-t border-dark-800 flex items-center justify-between text-[11px] font-mono text-slate-400">
+                    <span className={isSelected ? 'text-brand-400 font-semibold' : ''}>
+                      {isSelected ? 'Active Layer' : 'Click to Inspect'}
+                    </span>
+                    {idx < layers.length - 1 && (
+                      <ArrowRight className="w-3.5 h-3.5 text-slate-500 hidden lg:inline group-hover:translate-x-1 transition-transform" />
+                    )}
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </ScrollReveal>
 
-                <div className="pt-3 border-t border-dark-800 flex items-center justify-between text-[11px] font-mono text-slate-400">
-                  <span className={isSelected ? 'text-brand-400 font-semibold' : ''}>
-                    {isSelected ? 'Active Layer' : 'Click to Inspect'}
-                  </span>
-                  {idx < layers.length - 1 && (
-                    <ArrowRight className="w-3.5 h-3.5 text-slate-500 hidden lg:inline group-hover:translate-x-1 transition-transform" />
-                  )}
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-
-        {/* Selected Layer Details Panel with Smooth AnimatePresence */}
+        {/* Selected Layer Details Panel */}
         <AnimatePresence mode="wait">
           <motion.div 
             key={selectedLayer.id}
-            className="bg-dark-900/90 border border-dark-750 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl"
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -15 }}
-            transition={{ duration: 0.3 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="bg-dark-900/90 border border-dark-750 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl"
           >
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
               
-              {/* Left: Responsibilities */}
               <div className="lg:col-span-7 space-y-4">
                 <div className="flex items-center gap-2.5 pb-2 border-b border-dark-800">
                   <span className="p-2 rounded-xl bg-dark-850 text-brand-400">
@@ -176,7 +180,6 @@ export const ArchitectureSection: React.FC = () => {
                 </div>
               </div>
 
-              {/* Right: Technologies Used */}
               <div className="lg:col-span-5 bg-dark-950 p-5 rounded-2xl border border-dark-800">
                 <h4 className="text-xs font-mono uppercase tracking-wider text-slate-400 mb-3">
                   Verified Technologies in this Layer
